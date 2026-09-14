@@ -46,6 +46,27 @@ const CHAPTERS = [
       `It wasn't long before the conversations turned personal, interests, hobbies, getting to know each other. They found they had a lot in common, both drawn to the same things, both a little fascinated by the same ideas. Eventually they started a project together called Project-Eden, both of them hooked on sci-fi. That's when they realized they liked a lot of the same games too. She asked if he'd ever played Split Fiction. He hadn't, he never had anyone to play it with. So he asked if she'd play it with him, half expecting a no. She said yes. And that's where it all really began.`,
     ],
   },
+  {
+    id: 'four',
+    label: 'Chapter Four',
+    title: 'To Be Continued...',
+    color: 'var(--green)',
+    paragraphs: [`This chapter hasn't been written yet. Come back soon.`],
+  },
+  {
+    id: 'five',
+    label: 'Chapter Five',
+    title: 'To Be Continued...',
+    color: 'var(--yellow)',
+    paragraphs: [`This chapter hasn't been written yet. Come back soon.`],
+  },
+  {
+    id: 'six',
+    label: 'Chapter Six',
+    title: 'To Be Continued...',
+    color: 'var(--teal)',
+    paragraphs: [`This chapter hasn't been written yet. Come back soon.`],
+  },
 ];
 
 export default function StoryScreen({ onBack, onNavigate }) {
