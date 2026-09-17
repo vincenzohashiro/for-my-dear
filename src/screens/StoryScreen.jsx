@@ -49,23 +49,37 @@ const CHAPTERS = [
   {
     id: 'four',
     label: 'Chapter Four',
-    title: 'To Be Continued...',
+    title: 'A Single Game',
     color: 'var(--green)',
-    paragraphs: [`This chapter hasn't been written yet. Come back soon.`],
+    paragraphs: [
+      `It started with a single game. The first time he played Split Fiction, he was in awe, and she talked him through it, the story, the characters, the whole premise, while he listened closely. The real difficulty wasn't the game. It was their schedules. She was always busy, and he waited, so patiently that he started feeling sad on the days they couldn't play. When they finally could, he was so happy he couldn't tell if it was the game making him happy, or her. He didn't know it yet, but it was her.`,
+      `They played through it together, laughed through the hard parts and the easy ones, and were happy just being in it. They'd save at whatever point felt right when they were tired, but it never felt like enough. Then came her week-long vacation. He was sad he'd have to wait, but he knew she'd come back to play with him again. All through her trip they kept talking, simple hellos, good mornings, good nights, until one day out of nowhere she started sending him updates. Pictures of where she was, the food she was eating, even a video of something she knew he liked. He was stunned. "But why?" he thought. Why would she share all of this with him?`,
+      `He didn't know what to feel. Not nothing, definitely not nothing, he felt everything at once: hurt, yearning, happiness, all tangled together. There were feelings involved now, that much was clear. "Maybe she has feelings for me?" he asked himself, and couldn't answer. He was good at reading people, at sensing what they felt before they said it, but with her he had no idea. Something in him had woken up, something he'd kept locked away for a long time, and even he didn't know where it came from. "Eto nanaman ba?" he thought. Another risk. Another disaster waiting to happen.`,
+    ],
   },
   {
     id: 'five',
     label: 'Chapter Five',
-    title: 'To Be Continued...',
+    title: 'The Spiral',
     color: 'var(--yellow)',
-    paragraphs: [`This chapter hasn't been written yet. Come back soon.`],
+    paragraphs: [
+      `He didn't know what to do with what he was feeling, whether to protect his peace or risk it all for this girl. Confused, they kept playing like always, grinding Palworld, building the base, exploring together, and for a while the games were just an excuse to spend time with her, or so he told himself. "Miss ko si charm," he caught himself thinking, and he couldn't tell if it was her he missed or just the routine of playing together. He didn't dwell on it. He went to the gym and moved on. But they were getting closer. She was becoming something to him. He was falling.`,
+      `Then came It Takes Two. She told him how much the game meant to her, how she wished her own life could work out the way the story did. He felt how uneasy she was underneath it, felt it fully, and he told himself, "I'll stay with this girl, she needs it." His kindness again. He'd promised himself he wouldn't let himself be this open again, but there was something about her he couldn't resist, so he risked it, again, for her. She had no idea this boy was going to stay for good.`,
+      `They took pictures together and played for days straight. Hearing her laugh, hearing her happy, was enough to make him feel like he was keeping his word to her. They were happy, and busy, as their server Zelvaria got ready to open. She kept working on her models, he kept fixing whatever needed fixing, and they talked about more than just games now. Then things went sideways. Someone new joined the server, a girl who went by Frosty, just passing through. Everyone knew her as a little devious, but Vinnie was the one person she actually talked to, since they had things in common. That shared interest was where it all started to spiral.`,
+      `Frosty and Vinnie talked about cybersecurity, about keeping everyone safe after some recent attacks and a "kupal" who'd slipped into the server and left. He wanted to learn what she knew, partly for his own reasons: protecting everyone, especially now that he had feelings for Charmy. At one point Frosty and Vinnie got on a call to go over the defenses they were building, kept quiet since exposing it could put everyone at risk, and he felt like he was the only one who could carry that responsibility. Then Charmy joined the call and asked if it was only the two of them. "Yes, kasi it's confidential," he said, and she left. He knew something was wrong, even if he didn't fully understand what she was feeling. The real fallout started the next day.`,
+    ],
   },
   {
     id: 'six',
     label: 'Chapter Six',
-    title: 'To Be Continued...',
+    title: 'The Night He Fell',
     color: 'var(--teal)',
-    paragraphs: [`This chapter hasn't been written yet. Come back soon.`],
+    paragraphs: [
+      `The day after, Charmy was different with him. He knew the signs, she was tampo, still upset about what happened. So he persisted, calling her, wanting to spend time with her, what he called "Charmy time." She didn't feel like talking at first, but he kept at it, gently, until she opened up again and was herself. He stayed on the call with her until dawn, until she fell asleep, just so he'd know she was okay.`,
+      `Then they played Sea of Thieves together, and it was genuinely fun, the kind of fun that made the exhaustion from their own busy days just disappear when they were together. It only deepened how much he wanted to be near her, even if it was just a voice on a call. Hearing her made everything else stop mattering. It scared him a little, how fast he was falling. A fall like that doesn't end softly.`,
+      `September 1st, his birthday, usually just another day to him. Then "Mein Schatz," Charmy, greeted him, and he was ecstatic, until he noticed something was off. She felt sad, though she kept telling him, "Don't mind me, it's your day." She didn't know that being with her already was his day. He waited for her to come home from her busy Monday, and when she finally did, she wasn't in the mood to call. He waited anyway, sensing something wrong. The hardest part was working up the nerve to ask her. "What if she doesn't want to?" "May nagawa nanaman ba ako?" "Did I make her sad?" "Kailangan bumawi for her." "I must make her happy." When they finally called, she was so quiet she'd muted herself, but he stayed anyway. Lord, I love this girl, he thought, please help me make her happy. They talked, they sat with it, she kept apologizing for nothing that mattered to him. She mattered more.`,
+      `Then they watched Project Hail Mary together. At first her silence scared him, he felt himself growing uneasy too, but he held his ground. I love this girl, he told himself. Then she unmuted, and slowly she came back, a little talkative, a little more herself, until she finally laughed. He didn't tell her, but seeing her happy again made him happier than she could have known. He stayed with her until she fell asleep, and for the first time in a while, he felt at peace. That was the night he fell completely. Vinnie loved Charmy. He wanted to protect her, wanted her happy, wanted her, and neither of them knew yet what came next.`,
+    ],
   },
 ];
 
