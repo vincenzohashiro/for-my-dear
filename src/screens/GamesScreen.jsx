@@ -46,6 +46,13 @@ const GAMES = [
     color: 'var(--purple)',
     soft: '#dccfff',
   },
+  {
+    id: 'project-zomboid',
+    title: 'Project Zomboid',
+    tagline: 'Zombie Survival',
+    color: 'var(--red)',
+    soft: '#ffd2d5',
+  },
 ];
 
 export default function GamesScreen({ onBack }) {
