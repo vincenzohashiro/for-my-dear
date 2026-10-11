@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import FloatingHearts from './components/FloatingHearts';
+import PixelHeart from './components/PixelHeart';
 import NameGate from './screens/NameGate';
 import QuestionGate from './screens/QuestionGate';
 import MenuScreen from './screens/MenuScreen';
@@ -8,7 +9,11 @@ import GamesScreen from './screens/GamesScreen';
 import StoryScreen from './screens/StoryScreen';
 import LetterScreen from './screens/LetterScreen';
 import PlayScreen from './screens/PlayScreen';
+import WaitScreen from './screens/WaitScreen';
 import './App.css';
+
+// Flip to true and push again when the site is ready to go live.
+const SITE_READY = false;
 
 const WIPE_STEPS = {
   initial: {
@@ -44,6 +49,10 @@ const FULLSCREEN_STEPS = {
 function App() {
   const [step, setStep] = useState('name');
 
+  if (!SITE_READY) {
+    return <WaitScreen />;
+  }
+
   const FullscreenScreen = FULLSCREEN_STEPS[step];
   if (FullscreenScreen) {
     const props =
@@ -59,6 +68,21 @@ function App() {
 
   return (
     <div className="page">
+      <div className="page-stars" aria-hidden="true">
+        {Array.from({ length: 24 }).map((_, i) => (
+          <span
+            key={i}
+            className="page-star"
+            style={{
+              left: `${(i * 37) % 100}%`,
+              top: `${(i * 53) % 60}%`,
+              '--d': `${2 + (i % 5)}s`,
+              '--delay': `${(i % 7) * 0.4}s`,
+            }}
+          />
+        ))}
+      </div>
+
       <FloatingHearts />
 
       <motion.main
@@ -67,6 +91,10 @@ function App() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
+        <div className="pixel-panel-badge">
+          <PixelHeart size={30} color="var(--pink)" />
+        </div>
+
         <AnimatePresence mode="wait">
           {step === 'name' && (
             <motion.div

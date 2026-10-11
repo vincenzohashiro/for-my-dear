@@ -60,6 +60,13 @@ const GAMES = [
     color: 'var(--blue)',
     soft: '#c6dcf7',
   },
+  {
+    id: 'sketchheads',
+    title: 'Sketchheads',
+    tagline: 'Drawing Party Game',
+    color: 'var(--orange)',
+    soft: '#ffdcb8',
+  },
 ];
 
 export default function GamesScreen({ onBack }) {

@@ -20,6 +20,7 @@ export default function LetterDetailScreen({ letter, onBack }) {
   const scrollRef = useRef(null);
   const [progress, setProgress] = useState(0);
   const [tapHearts, setTapHearts] = useState([]);
+  const [scrolledPastHeader, setScrolledPastHeader] = useState(false);
   const milestonesHitRef = useRef(new Set());
 
   // Reading-progress bar + confetti rewards at 25/50/75/100% scrolled,
@@ -33,6 +34,7 @@ export default function LetterDetailScreen({ letter, onBack }) {
       const max = el.scrollHeight - el.clientHeight;
       const pct = max > 0 ? Math.min(100, (el.scrollTop / max) * 100) : 0;
       setProgress(pct);
+      setScrolledPastHeader(el.scrollTop > 40);
 
       // Safety net: a fast scroll, a jump, or a dropped frame could carry a
       // paragraph past the viewport without it ever registering as
@@ -133,7 +135,7 @@ export default function LetterDetailScreen({ letter, onBack }) {
       </button>
 
       <motion.div
-        className="letter-detail-paper"
+        className={`letter-detail-paper${scrolledPastHeader ? ' letter-paper-faded-top' : ''}`}
         ref={scrollRef}
         onClick={handlePaperClick}
         initial={{ opacity: 0, scale: 0.97 }}

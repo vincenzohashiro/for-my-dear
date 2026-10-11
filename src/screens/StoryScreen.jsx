@@ -81,6 +81,27 @@ const CHAPTERS = [
       `Then they watched Project Hail Mary together. At first her silence scared him, he felt himself growing uneasy too, but he held his ground. I love this girl, he told himself. Then she unmuted, and slowly she came back, a little talkative, a little more herself, until she finally laughed. He didn't tell her, but seeing her happy again made him happier than she could have known. He stayed with her until she fell asleep, and for the first time in a while, he felt at peace. That was the night he fell completely. Vinnie loved Charmy. He wanted to protect her, wanted her happy, wanted her, and neither of them knew yet what came next.`,
     ],
   },
+  {
+    id: 'seven',
+    label: 'Chapter Seven',
+    title: 'Coming Soon',
+    color: '#9a94ab',
+    comingSoon: true,
+  },
+  {
+    id: 'eight',
+    label: 'Chapter Eight',
+    title: 'Coming Soon',
+    color: '#9a94ab',
+    comingSoon: true,
+  },
+  {
+    id: 'nine',
+    label: 'Chapter Nine',
+    title: 'Coming Soon',
+    color: '#9a94ab',
+    comingSoon: true,
+  },
 ];
 
 export default function StoryScreen({ onBack, onNavigate }) {
@@ -166,10 +187,10 @@ export default function StoryScreen({ onBack, onNavigate }) {
                 <button
                   key={chapter.id}
                   type="button"
-                  className={`story-tab${activeChapter === chapter.id ? ' active' : ''}`}
+                  className={`story-tab${activeChapter === chapter.id ? ' active' : ''}${chapter.comingSoon ? ' coming-soon' : ''}`}
                   onClick={() => scrollToChapter(chapter.id)}
                 >
-                  {chapter.label}
+                  {chapter.comingSoon ? `${chapter.label} 🔒` : chapter.label}
                 </button>
               ))}
             </div>
@@ -178,7 +199,7 @@ export default function StoryScreen({ onBack, onNavigate }) {
               <motion.section
                 key={chapter.id}
                 ref={(el) => (chapterRefs.current[chapter.id] = el)}
-                className="story-chapter"
+                className={`story-chapter${chapter.comingSoon ? ' coming-soon' : ''}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: index * 0.08 }}
@@ -186,15 +207,27 @@ export default function StoryScreen({ onBack, onNavigate }) {
                 <span className="story-chapter-tag" style={{ '--tag-color': chapter.color }}>
                   {chapter.label}
                 </span>
-                <h2 className="story-chapter-title">{chapter.title}</h2>
-                <p className="story-chapter-body">{chapter.paragraphs[0]}</p>
-                <button
-                  type="button"
-                  className="story-read-more"
-                  onClick={() => setOpenChapter(chapter)}
-                >
-                  Read More <span aria-hidden="true">&rarr;</span>
-                </button>
+                {chapter.comingSoon ? (
+                  <>
+                    <h2 className="story-chapter-title">Coming Soon &hearts;</h2>
+                    <p className="story-chapter-body coming-soon-body">
+                      This chapter hasn&apos;t been written yet. The story's still going, Mein
+                      Schatz, check back soon.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h2 className="story-chapter-title">{chapter.title}</h2>
+                    <p className="story-chapter-body">{chapter.paragraphs[0]}</p>
+                    <button
+                      type="button"
+                      className="story-read-more"
+                      onClick={() => setOpenChapter(chapter)}
+                    >
+                      Read More <span aria-hidden="true">&rarr;</span>
+                    </button>
+                  </>
+                )}
               </motion.section>
             ))}
 

@@ -6,10 +6,10 @@ import TypewriterText from '../components/TypewriterText';
 import { HEART_GRID, CAMERA_GRID, ENVELOPE_GRID, CONTROLLER_GRID, STAR_GRID } from '../pixelGrids';
 
 const MENU_ITEMS = [
-  { id: 'story', label: 'Our Story', grid: HEART_GRID, color: 'var(--pink)' },
-  { id: 'photos', label: 'Photos', grid: CAMERA_GRID, color: 'var(--sky)' },
-  { id: 'letter', label: 'Letter', grid: ENVELOPE_GRID, color: 'var(--yellow)' },
-  { id: 'game', label: 'Play a Game', grid: CONTROLLER_GRID, color: 'var(--purple)' },
+  { id: 'story', label: 'Our Story', grid: HEART_GRID, color: 'var(--pink)', glow: 'rgba(255, 107, 157, 0.65)' },
+  { id: 'photos', label: 'Photos', grid: CAMERA_GRID, color: '#4fc3f7', glow: 'rgba(79, 195, 247, 0.65)' },
+  { id: 'letter', label: 'Letter', grid: ENVELOPE_GRID, color: 'var(--yellow)', glow: 'rgba(255, 217, 61, 0.65)' },
+  { id: 'game', label: 'Play a Game', grid: CONTROLLER_GRID, color: 'var(--purple)', glow: 'rgba(140, 94, 255, 0.65)' },
 ];
 
 export default function MenuScreen({ onSelect }) {
@@ -48,7 +48,7 @@ export default function MenuScreen({ onSelect }) {
               key={item.id}
               type="button"
               className={`menu-node${isSelected ? ' selected' : ''}`}
-              style={{ '--i': index, '--node-color': item.color }}
+              style={{ '--i': index, '--node-color': item.color, '--node-glow': item.glow }}
               onMouseEnter={() => setSelectedIndex(index)}
               onClick={() => onSelect(item.id)}
               whileTap={{ scale: 0.9 }}
