@@ -14,6 +14,7 @@
   --wood-dark: #2a1a10;
   --felt: #1f5c3a;
   --blue: #2f7cd6;
+  --letter-ink: #3a2411;
   --pixel: 4px;
 }
 
@@ -1365,40 +1366,376 @@ form {
   50% { opacity: 1; }
 }
 
-.letter-scroll {
+/* ---- letter archive (list of monthsary letters) ---- */
+
+.letter-archive {
   position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
   width: 90%;
-  max-width: 320px;
-  box-shadow: 8px 8px 0 var(--ink);
-}
-
-.letter-rod {
-  height: 10px;
-  background: var(--wood-dark);
-  border: 3px solid var(--ink);
-}
-
-.letter-paper {
-  background: var(--parchment);
-  border-left: var(--pixel) solid var(--ink);
-  border-right: var(--pixel) solid var(--ink);
-  padding: 1.75rem 1.5rem;
+  max-width: 420px;
   text-align: center;
-  margin: -2px 0;
 }
 
-.letter-seal {
-  width: 36px;
-  height: 36px;
-  background: var(--red);
+.letter-archive-subtitle {
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  color: var(--parchment);
+  opacity: 0.8;
+  margin: -0.5rem 0 1rem;
+}
+
+.letter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.letter-envelope {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--parchment);
   border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.letter-envelope-icon {
+  flex: 0 0 auto;
+  display: flex;
+  background: var(--tile-color);
+  border: 2px solid var(--ink);
+  padding: 6px;
+}
+
+.letter-envelope-text {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.letter-envelope-date {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.55rem;
+  color: var(--pink-dark);
+  text-transform: uppercase;
+}
+
+.letter-envelope-title {
+  font-family: 'VT323', monospace;
+  font-size: 1.3rem;
+  color: var(--ink);
+}
+
+.letter-envelope-open {
+  flex: 0 0 auto;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  color: var(--pink-dark);
+  white-space: nowrap;
+}
+
+/* ---- letter detail: the full reading page ---- */
+
+.letter-detail-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  background: radial-gradient(circle at 50% 0%, #2a1a10 0%, #0d0704 70%);
+  overflow: hidden;
+}
+
+.letter-progress-track {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 3;
+}
+
+.letter-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--pink), #ffa8c6);
+  box-shadow: 0 0 10px rgba(255, 107, 157, 0.6);
+  transition: width 0.1s linear;
+}
+
+.letter-ambient {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.letter-ambient-heart {
+  position: absolute;
+  top: 10%;
+}
+
+.letter-detail-exit {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 3;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0.75rem auto;
+  font-family: 'Lora', serif;
+  font-size: 1.3rem;
+  line-height: 1;
+  background: rgba(20, 10, 10, 0.55);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  backdrop-filter: blur(2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.letter-detail-exit:hover {
+  background: var(--red);
+  transform: scale(1.08);
+}
+
+.letter-detail-exit:active {
+  transform: scale(0.94);
+}
+
+.letter-detail-paper {
+  position: relative;
+  z-index: 1;
+  height: calc(100% - 1.5rem);
+  overflow-y: auto;
+  background: linear-gradient(175deg, #f3e3c4 0%, #e6c998 100%);
+  margin: 1rem auto 0.5rem;
+  max-width: 680px;
+  border-radius: 6px;
+  padding: clamp(2.25rem, 7vw, 4rem) clamp(1.1rem, 6vw, 3rem) 4rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  scrollbar-width: thin;
+  scrollbar-color: var(--red) transparent;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.3) 8%, black 22%, black 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.3) 8%, black 22%, black 100%);
+}
+
+.letter-detail-paper::-webkit-scrollbar {
+  width: 10px;
+}
+
+.letter-detail-paper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.letter-detail-paper::-webkit-scrollbar-thumb {
+  background-color: var(--red);
+  background-image: linear-gradient(180deg, #ff5c7a 0%, var(--red) 55%, #a01f36 100%);
+  border-radius: 0 0 5px 5px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  box-shadow: 0 0 6px rgba(166, 25, 55, 0.5), inset 0 2px 2px rgba(255, 255, 255, 0.35);
+}
+
+.letter-detail-paper::-webkit-scrollbar-thumb:hover {
+  background-image: linear-gradient(180deg, #ff6f8c 0%, #e04560 55%, #b02540 100%);
+}
+
+.letter-detail-paper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 0%, rgba(255, 196, 102, 0.75), transparent 58%);
+  animation: letterFlicker 4s ease-in-out infinite;
+}
+
+@keyframes letterFlicker {
+  0%, 100% { opacity: 0.5; }
+  22% { opacity: 1; }
+  38% { opacity: 0.35; }
+  55% { opacity: 0.85; }
+  74% { opacity: 0.45; }
+  88% { opacity: 0.75; }
+}
+
+@media (min-width: 560px) {
+  .letter-detail-paper {
+    margin: 2rem auto;
+    height: calc(100% - 4rem);
+    border-radius: 10px;
+  }
+}
+
+.letter-wax-seal {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ff5c7a, var(--red) 70%, #a01f36 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.75rem;
+  color: #ffe9e0;
+  font-size: 1.4rem;
+  line-height: 1;
+  animation: waxSealGlow 2.6s ease-in-out infinite;
+}
+
+@keyframes waxSealGlow {
+  0%, 100% { box-shadow: 0 4px 10px rgba(166, 25, 55, 0.45), inset 0 2px 3px rgba(255, 255, 255, 0.3), 0 0 0 rgba(255, 108, 139, 0); }
+  50% { box-shadow: 0 4px 16px rgba(166, 25, 55, 0.6), inset 0 2px 3px rgba(255, 255, 255, 0.35), 0 0 22px rgba(255, 108, 139, 0.55); }
+}
+
+.letter-eyebrow {
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: clamp(2rem, 7vw, 2.6rem);
+  color: var(--pink-dark);
+  text-align: center;
+  margin: 0 0 0.15rem;
+}
+
+.letter-eyebrow-sub {
+  font-family: 'Lora', serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--letter-ink);
+  opacity: 0.65;
+  text-align: center;
+  margin: 0 0 1.25rem;
+}
+
+.letter-date {
+  font-family: 'Lora', serif;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--letter-ink);
+  opacity: 0.6;
+  text-align: center;
+  margin: 0 0 2rem;
+}
+
+.letter-salutation {
+  font-family: 'Caveat', cursive;
+  font-weight: 600;
+  font-size: clamp(1.6rem, 5vw, 2rem);
+  color: var(--letter-ink);
+  margin: 0 0 1.25rem;
+}
+
+.letter-paragraph {
+  font-family: 'Lora', serif;
+  font-weight: 500;
+  font-size: clamp(1.1rem, 3.8vw, 1.22rem);
+  line-height: 1.9;
+  letter-spacing: 0.1px;
+  color: var(--letter-ink);
+  margin: 0 0 1.3rem;
+}
+
+.letter-paragraph em {
+  color: var(--pink-dark);
+  font-style: italic;
+  font-weight: 600;
+}
+
+.letter-paragraph-first::first-letter {
+  font-family: 'Lora', serif;
+  font-weight: 600;
+  font-size: 3.2rem;
+  color: var(--pink-dark);
+  float: left;
+  line-height: 0.85;
+  margin: 0.05rem 0.4rem 0 0;
+}
+
+.letter-reveal {
+  opacity: 0.18;
+  transform: translateY(22px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.letter-reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.letter-tap-heart {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.letter-highlight {
+  text-align: center;
+  margin: 2.5rem 0;
+  padding: 1.5rem 1rem;
+}
+
+.letter-highlight::before {
+  content: '♥';
+  display: block;
+  color: var(--pink-dark);
+  opacity: 0.5;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.letter-highlight-text {
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: clamp(1.8rem, 7vw, 2.4rem);
+  line-height: 1.3;
+  color: var(--pink-dark);
+  margin: 0 0 0.4rem;
+  animation: highlightGlow 2.8s ease-in-out infinite;
+}
+
+@keyframes highlightGlow {
+  0%, 100% { text-shadow: 0 0 0 rgba(214, 51, 108, 0); }
+  50% { text-shadow: 0 0 18px rgba(214, 51, 108, 0.45); }
+}
+
+.letter-highlight-translation {
+  font-family: 'Lora', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--letter-ink);
+  opacity: 0.65;
+  margin: 0;
+}
+
+.letter-signoff {
+  font-family: 'Lora', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--letter-ink);
+  opacity: 0.85;
+  margin: 1.75rem 0 0.25rem;
+}
+
+.letter-signature {
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: clamp(2rem, 7vw, 2.6rem);
+  color: var(--pink-dark);
+  margin: 0 0 2rem;
 }
 
 .letter-back {
@@ -1640,7 +1977,7 @@ form {
     font-size: 0.55rem;
   }
 
-  .letter-scroll,
+  .letter-archive,
   .play-board {
     max-width: 100%;
   }

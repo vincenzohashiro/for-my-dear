@@ -1,0 +1,185 @@
+export const LETTERS = [
+  {
+    id: 'oct-12-2026',
+    date: 'October 12, 2026',
+    title: 'Für dich, Charmy',
+    color: 'var(--pink)',
+    blocks: [
+      { type: 'eyebrow', text: 'Für dich, Charmy ❤️' },
+      { type: 'date', text: 'October 12, 2026' },
+      { type: 'salutation', text: 'To my dearest Charmy,' },
+      { type: 'p', text: 'Hi, baby. ❤️' },
+      { type: 'p', text: 'Happy October 12, my love.' },
+      {
+        type: 'p',
+        text: `Do you remember when I asked you whether you preferred the 12th or the 13th? You chose the 12th without knowing why I was asking. Well, now you finally get to find out.`,
+      },
+      {
+        type: 'p',
+        text: `I've been thinking about what I could give you. I even considered getting you another game on Steam, but I wanted to do something different this time. I wanted to give you something that I made myself, something I could put my time, effort, and feelings into. Something that wasn't just another gift I bought, but something I could look at and say, "I made this for Charmy."`,
+      },
+      { type: 'p', text: `And so, here we are.` },
+      {
+        type: 'p',
+        text: `I know the distance makes things difficult sometimes. I can't just show up at your door with something you like, take you somewhere nice, or hold you close when you've had a long day. I can't see your face in person whenever I miss you, and I can't simply reach for your hand when I want you near me.`,
+      },
+      {
+        type: 'p',
+        text: `But I can make things like this. I can put my thoughts into something you can keep, something you can revisit, and something that reminds you that even from here, you're someone I think about and care for deeply.`,
+      },
+      {
+        type: 'p',
+        text: `Before you read any further, though, baby, please don't feel bad if you didn't know what this date meant to me or if you didn't prepare anything. I never told you why I chose it, so you had no way of knowing. I didn't make this expecting anything in return. I just wanted to give you something special because I wanted to see you smile.`,
+      },
+      { type: 'p', text: `That's all, baby. No hidden expectations, no need to make up for anything. Just something from me to you. ❤️` },
+      { type: 'p', text: `Now, where do I even begin with you?` },
+      {
+        type: 'p',
+        text: `Sometimes, I catch myself thinking about the most random things we've talked about. Little conversations that probably seemed ordinary at the time, things that made me laugh, things you said that stayed in my head longer than I expected. It's funny how someone can become such a big part of your thoughts without even being physically near you.`,
+      },
+      { type: 'p', text: `I never really understood how much I could miss someone's presence until I started missing yours.` },
+      {
+        type: 'p',
+        text: `There are moments when I wish you were here, not even for anything extraordinary. Sometimes, I just want to sit beside you while you talk about your day. I want to see your expressions when you're telling me something, hear your laugh without a microphone between us, and watch you get excited about the little things you love. I want to be able to reach over and hold your hand without having to think about the distance first.`,
+      },
+      { type: 'p', text: `I want those ordinary moments with you, baby.` },
+      {
+        type: 'p',
+        text: `I want the days when we have absolutely nothing planned. The times when we talk about nonsense and somehow end up laughing for far too long. The moments when you're telling me something and I find myself paying attention to every little detail because it's you who's telling me about it. Even the quiet moments when neither of us has much to say, but neither of us feels the need to leave.`,
+      },
+      {
+        type: 'p',
+        text: `I think those are the things I look forward to most. Not just the big romantic moments, but the little pieces of everyday life that I wish I could share with you.`,
+      },
+      { type: 'p', text: `And until we get to experience those things in person, I'm grateful for what we have now.` },
+      { type: 'p', text: `Because somehow, even through a screen, you have found ways to make me feel close to you.` },
+      {
+        type: 'p',
+        text: `I love getting to know you, Charmy. I love discovering the little things that make you who you are. Your humor, your thoughts, the things that excite you, the things that annoy you, and all those little details I wouldn't know if I hadn't taken the time to listen.`,
+      },
+      {
+        type: 'p',
+        text: `Gusto pa kitang makilala, baby. I want to keep learning about you, even the things you might think are unimportant. I want to know what makes your day better, what gets on your nerves, what you dream about, and what you think about when you're lying in bed and can't sleep.`,
+      },
+      {
+        type: 'p',
+        text: `I don't want to rush through getting to know you as though there's some finish line waiting for us. I want to discover you naturally, one conversation at a time. And I hope you get to discover me that way, too.`,
+      },
+      { type: 'p', text: `There's something else I've been thinking about lately.` },
+      {
+        type: 'p',
+        text: `When you told me that we're in this together, and that you'd break down any doors or walls I put up, I don't think I properly explained what that meant to me.`,
+      },
+      {
+        type: 'p',
+        text: `Baby, I've spent so much time trying to handle things by myself that sometimes I forget I don't always have to. When something hurts me or overwhelms me, my first instinct is often to retreat into my own thoughts. I try to figure everything out alone because I convince myself that's what I should do.`,
+      },
+      { type: 'p', text: `Sometimes, I get so caught up in trying to protect the people I care about from my struggles that I end up keeping them at a distance.` },
+      { type: 'p', text: `And I know I've done that with you.` },
+      {
+        type: 'p',
+        text: `But when you told me that you wanted to be there for me, that you wanted us to face things together, it made me realize something. I don't have to hide every difficult part of myself from someone who genuinely wants to understand me.`,
+      },
+      {
+        type: 'p',
+        text: `I can be tired without pretending I'm okay. I can be scared without immediately pushing you away. I can have moments when I don't know what to do and still allow you to stand beside me.`,
+      },
+      { type: 'p', text: `I'm still learning how to do that, baby, but I want to.` },
+      {
+        type: 'p',
+        text: `Thank you for making me feel that I don't always have to carry everything alone. Thank you for wanting to understand me even when I struggle to explain myself. And thank you for reminding me that letting someone love you also means allowing them to see you when you're not at your best.`,
+      },
+      { type: 'p', text: `I don't expect you to fix my problems or carry my burdens for me. I just appreciate knowing that I can let you in instead of automatically closing the door.` },
+      { type: 'p', text: `And I want you to have that same feeling with me.` },
+      {
+        type: 'p',
+        text: `I want you to know that you can talk to me when something bothers you. You can tell me when you're upset, when you're happy, when you need space, or when you just want someone to listen. You don't have to have the perfect words or explain every feeling immediately.`,
+      },
+      { type: 'p', text: `I want to understand you, too.` },
+      {
+        type: 'p',
+        text: `I know I won't always get everything right. There will be times when I misunderstand something, when I say the wrong thing, or when I need to step back and think about how I handled a situation. But I want to keep learning. I want to become better at listening to you, communicating with you, and making sure that my actions reflect the love I tell you I have for you.`,
+      },
+      { type: 'p', text: `Not because I think I need to become a perfect person to deserve you, but because I genuinely want to grow.` },
+      { type: 'p', text: `And I hope you know that you don't have to be perfect around me, either.` },
+      {
+        type: 'p',
+        text: `You can be sweet, playful, stubborn, quiet, silly, serious, or whatever version of yourself you happen to be that day. You don't have to act a certain way to make me happy. I want to know the real you, not some version of you that feels like she always has to get things right.`,
+      },
+      {
+        type: 'p',
+        text: `I like your little quirks, baby. I like the way you can surprise me, the way our conversations can take the most unexpected turns, and the way there's always something new for me to discover about you.`,
+      },
+      { type: 'p', text: `I like that we can have serious conversations and still have moments when we act completely ridiculous with each other.` },
+      { type: 'p', text: `And I hope we never lose that.` },
+      {
+        type: 'p',
+        text: `I want us to have more random conversations, more unexpected laughs, more moments when one of us says something so stupid that the other can't stop laughing. I want to send you things that remind me of you, tell you random thoughts that cross my mind, and hear about the little things that happened during your day.`,
+      },
+      { type: 'p', text: `I want to keep flirting with you, teasing you, making you laugh, and finding little ways to make you feel loved even when I can't be there physically.` },
+      { type: 'p', text: `I don't need every moment between us to be extraordinary. Sometimes, I think the most meaningful things are the ones that happen without us even planning them.` },
+      {
+        type: 'p',
+        text: `A random message saying I love you. A conversation that lasts longer than expected. Staying on call because neither of us wants to say goodbye just yet. Hearing your voice after a difficult day and feeling a little better simply because you're there.`,
+      },
+      { type: 'p', text: `Those little things mean something to me, Charmy.` },
+      {
+        type: 'p',
+        text: `And I want you to know that when I do something for you, whether it's making a website, giving you a gift, or simply sending you a random message because you crossed my mind, it's because I want to share something with you.`,
+      },
+      { type: 'p', text: `You don't have to do something equally big in return. You don't have to match my effort or worry that you've somehow fallen behind.` },
+      {
+        type: 'p',
+        text: `I know I asked you to choose between the 12th and the 13th without telling you why. You couldn't have known what I was planning, and I don't want you to feel bad about that. I chose this date because I wanted to make it special for you. That's my choice, and I'm happy with it.`,
+      },
+      { type: 'p', text: `So please, just enjoy this little gift, baby. Let it make you smile. That's all I wanted.` },
+      { type: 'p', text: `And now, there's something I really want you to know.` },
+      { type: 'p', text: `I'm grateful that I met you.` },
+      {
+        type: 'p',
+        text: `I'm grateful for the conversations we've had, for the things you've shared with me, for the moments when you've made me laugh, and for the times when you've let me see a little more of who you are. I'm grateful for the way you've reached me, sometimes without even realizing it.`,
+      },
+      { type: 'p', text: `You've given me moments that I genuinely cherish, and I hope I've given you some of those moments, too.` },
+      { type: 'p', text: `I love you, Charmy.` },
+      {
+        type: 'p',
+        text: `Not just in the big, dramatic moments when I feel like I have a thousand things to say, but in the quiet moments, too. In the ordinary conversations, the silly jokes, the little messages, and the times when I simply find myself wishing you were here.`,
+      },
+      { type: 'p', text: `I love getting to know you. I love having you in my life. And I love that there are still so many things about you that I haven't discovered yet.` },
+      {
+        type: 'p',
+        text: `I don't know exactly what every day ahead of us will look like, and I don't think I need to know right now. I just want to appreciate what we have, keep learning about each other, and make the most of the moments we get to share.`,
+      },
+      {
+        type: 'p',
+        text: `I want to become someone who loves you well, who listens when you need to be heard, who can admit when he's wrong, and who lets you be part of his life instead of trying to handle everything alone.`,
+      },
+      { type: 'p', text: `And I want to keep giving you reasons to smile, even if sometimes those reasons are as simple as a random message from me saying, "Hi baby, nothing, love you."` },
+      { type: 'p', text: `Because sometimes, that's genuinely all I have to say.` },
+      { type: 'p', text: `I love you, and I wanted you to know.` },
+      { type: 'highlight', text: 'Charmy, ich liebe dich.', translation: '(Charmy, I love you.)' },
+      { type: 'p', text: `Happy October 12, my dear.` },
+      {
+        type: 'p',
+        text: `I hope that when you look at this website, you'll remember that someone sat down and made it with you in mind. Someone who wanted to give you something personal, not because he expected anything back, but because making you happy is something he wanted to do.`,
+      },
+      { type: 'p', text: `I hope you smile when you read this. I hope you laugh at some of my words, maybe roll your eyes at me a little, and feel just how much thought went into making this for you.` },
+      {
+        type: 'p',
+        text: `And maybe someday, when the distance between us isn't something we have to think about so much, we'll look back at this and laugh about how I made you a whole website just to tell you how much you mean to me.`,
+      },
+      { type: 'p', text: `Honestly, knowing myself, I probably would do it all over again.` },
+      { type: 'p', text: `Because you're worth the time it took to make this, baby.` },
+      {
+        type: 'p',
+        text: `Thank you for being you. Thank you for letting me get to know you. And thank you for the moments we've shared, whether they were silly, sweet, difficult, or somewhere in between.`,
+      },
+      { type: 'p', text: `I hope we have many more moments to look back on, and I hope we continue making memories that are ours.` },
+      { type: 'p', text: `For now, this is my little gift to you, made with love and a lot of thought.` },
+      { type: 'highlight', text: 'Für dich, mit ganz viel Liebe.', translation: '(For you, with lots of love.)' },
+      { type: 'p', text: `Happy October 12, baby. ❤️` },
+      { type: 'signoff', text: 'Yours,' },
+      { type: 'signature', text: 'Vinnie/Vincent' },
+    ],
+  },
+];

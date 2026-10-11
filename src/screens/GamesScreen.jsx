@@ -53,6 +53,13 @@ const GAMES = [
     color: 'var(--red)',
     soft: '#ffd2d5',
   },
+  {
+    id: 'minecraft-dungeons',
+    title: 'Minecraft Dungeons',
+    tagline: 'Dungeon Crawler',
+    color: 'var(--blue)',
+    soft: '#c6dcf7',
+  },
 ];
 
 export default function GamesScreen({ onBack }) {
