@@ -13,7 +13,7 @@ import WaitScreen from './screens/WaitScreen';
 import './App.css';
 
 // Flip to true and push again when the site is ready to go live.
-const SITE_READY = false;
+const SITE_READY = true;
 
 const WIPE_STEPS = {
   initial: {
