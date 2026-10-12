@@ -1570,13 +1570,13 @@ form {
 }
 
 .letter-envelope-author.author-vinnie {
-  background: var(--sky);
-  color: var(--ink);
+  background: var(--pink);
+  color: var(--cream);
 }
 
 .letter-envelope-author.author-charmy {
-  background: var(--pink);
-  color: var(--cream);
+  background: var(--sky);
+  color: var(--ink);
 }
 
 .letter-envelope {
