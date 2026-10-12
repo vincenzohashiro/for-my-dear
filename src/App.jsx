@@ -10,6 +10,7 @@ import StoryScreen from './screens/StoryScreen';
 import LetterScreen from './screens/LetterScreen';
 import PlayScreen from './screens/PlayScreen';
 import WaitScreen from './screens/WaitScreen';
+import LetterEditorScreen from './screens/LetterEditorScreen';
 import './App.css';
 
 // Flip to true and push again when the site is ready to go live.
@@ -48,6 +49,10 @@ const FULLSCREEN_STEPS = {
 
 function App() {
   const [step, setStep] = useState('name');
+
+  if (typeof window !== 'undefined' && window.location.hash === '#write') {
+    return <LetterEditorScreen />;
+  }
 
   if (!SITE_READY) {
     return <WaitScreen />;

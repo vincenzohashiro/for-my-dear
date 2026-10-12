@@ -2,16 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import PixelHeart from '../components/PixelHeart';
+import { renderInline as parseInline } from '../lib/letterUtils';
 
-// Converts simple *italic* markdown within a paragraph into <em> spans.
 function renderInline(text) {
-  const parts = text.split(/(\*[^*]+\*)/g);
-  return parts.map((part, i) => {
-    if (part.startsWith('*') && part.endsWith('*') && part.length > 1) {
-      return <em key={i}>{part.slice(1, -1)}</em>;
-    }
-    return <span key={i}>{part}</span>;
-  });
+  return parseInline(text).map((part) =>
+    part.em ? <em key={part.key}>{part.text}</em> : <span key={part.key}>{part.text}</span>
+  );
 }
 
 const MILESTONES = [25, 50, 75, 100];

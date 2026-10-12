@@ -1,13 +1,47 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PixelSprite from '../components/PixelSprite';
 import PixelHeart from '../components/PixelHeart';
 import { FLAME_GRID, ENVELOPE_GRID } from '../pixelGrids';
 import { LETTERS } from '../letters';
+import { supabase } from '../lib/supabaseClient';
+import { buildLetterFromFields } from '../lib/letterUtils';
 import LetterDetailScreen from './LetterDetailScreen';
 
 export default function LetterScreen({ onBack }) {
   const [openLetter, setOpenLetter] = useState(null);
+  const [writtenLetters, setWrittenLetters] = useState([]);
+
+  useEffect(() => {
+    if (!supabase) return;
+    let cancelled = false;
+
+    supabase
+      .from('letters')
+      .select('*')
+      .order('created_at', { ascending: true })
+      .then(({ data, error }) => {
+        if (cancelled || error || !data) return;
+        setWrittenLetters(
+          data.map((row) =>
+            buildLetterFromFields({
+              id: row.id,
+              title: row.title,
+              dateDisplay: row.date_display,
+              body: row.body,
+              closing: row.closing,
+              colorSeed: row.id,
+            })
+          )
+        );
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const allLetters = [...LETTERS, ...writtenLetters];
 
   return (
     <div className="letter-screen">
@@ -38,7 +72,7 @@ export default function LetterScreen({ onBack }) {
             <p className="letter-archive-subtitle">a little note, every month</p>
 
             <div className="letter-list">
-              {LETTERS.map((letter, index) => (
+              {allLetters.map((letter, index) => (
                 <motion.button
                   key={letter.id}
                   type="button"
