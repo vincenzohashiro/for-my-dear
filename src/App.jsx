@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import FloatingHearts from './components/FloatingHearts';
 import PixelHeart from './components/PixelHeart';
@@ -49,9 +49,16 @@ const FULLSCREEN_STEPS = {
 
 function App() {
   const [step, setStep] = useState('name');
+  const [hash, setHash] = useState(() => (typeof window !== 'undefined' ? window.location.hash : ''));
 
-  if (typeof window !== 'undefined' && window.location.hash === '#write') {
-    return <LetterEditorScreen />;
+  useEffect(() => {
+    const onHashChange = () => setHash(window.location.hash);
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
+  if (hash === '#write') {
+    return <LetterEditorScreen onExit={() => { window.location.hash = ''; }} />;
   }
 
   if (!SITE_READY) {

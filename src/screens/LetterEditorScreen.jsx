@@ -12,7 +12,7 @@ function autoGrow(el) {
   el.style.height = `${el.scrollHeight}px`;
 }
 
-export default function LetterEditorScreen() {
+export default function LetterEditorScreen({ onExit }) {
   const [title, setTitle] = useState('');
   const [dateDisplay, setDateDisplay] = useState(TODAY);
   const [body, setBody] = useState('');
@@ -81,6 +81,11 @@ export default function LetterEditorScreen() {
           <button type="button" className="pixel-button" onClick={handleWriteAnother}>
             Write Another
           </button>
+          {onExit && (
+            <button type="button" className="editor-exit-link" onClick={onExit}>
+              Back to Letters
+            </button>
+          )}
         </motion.div>
       </div>
     );
@@ -88,6 +93,12 @@ export default function LetterEditorScreen() {
 
   return (
     <div className="letter-detail-screen">
+      {onExit && (
+        <button type="button" className="letter-detail-exit" onClick={onExit} aria-label="Back to letters">
+          &times;
+        </button>
+      )}
+
       <form className="letter-detail-paper letter-editor-paper" onSubmit={handleSubmit}>
         <div className="letter-wax-seal" aria-hidden="true">
           &#10084;

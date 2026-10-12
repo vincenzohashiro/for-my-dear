@@ -1540,6 +1540,45 @@ form {
   margin-bottom: 1.5rem;
 }
 
+.letter-list-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.letter-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: -0.2rem 0 0.1rem;
+}
+
+.letter-envelope-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.15rem;
+}
+
+.letter-envelope-author {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  padding: 2px 6px;
+  border: 2px solid var(--ink);
+  text-transform: uppercase;
+}
+
+.letter-envelope-author.author-vinnie {
+  background: var(--sky);
+  color: var(--ink);
+}
+
+.letter-envelope-author.author-charmy {
+  background: var(--pink);
+  color: var(--cream);
+}
+
 .letter-envelope {
   display: flex;
   align-items: center;
@@ -2247,4 +2286,24 @@ textarea.letter-field-body:focus {
   font-size: 1.2rem;
   color: var(--ink);
   margin: 0 0 0.5rem;
+}
+
+.editor-exit-link {
+  font-family: 'VT323', monospace;
+  font-size: 1.1rem;
+  color: var(--ink);
+  opacity: 0.6;
+  background: none;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 0.25rem;
+}
+
+.editor-exit-link:hover {
+  opacity: 1;
+}
+
+.letter-write-button {
+  margin: 0.25rem 0 1rem;
 }

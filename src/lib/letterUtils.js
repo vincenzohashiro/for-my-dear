@@ -12,6 +12,34 @@ export function renderInline(text) {
 const DEFAULT_SIGNOFF = 'Yours,';
 const PALETTE = ['var(--pink)', 'var(--sky)', 'var(--yellow)', 'var(--purple)', 'var(--teal)', 'var(--green)'];
 
+// Reads who signed a letter from its signature text, so the archive can
+// label each envelope without anyone having to tag it by hand.
+export function getAuthorLabel(signatureText) {
+  const lower = (signatureText || '').toLowerCase();
+  if (lower.includes('charmy')) return 'Charmy';
+  if (lower.includes('vinnie') || lower.includes('vincent')) return 'Vinnie';
+  return (signatureText || '').trim().split(/\s+/)[0] || '';
+}
+
+export function getAuthorFromBlocks(blocks) {
+  const signatureBlock = blocks.find((block) => block.type === 'signature');
+  return getAuthorLabel(signatureBlock?.text);
+}
+
+// Best-effort parse of a free-typed date string (e.g. "October 12, 2026")
+// into a sortable number. Unparseable dates sort to the end instead of
+// crashing or silently reordering everything around them.
+export function parseLetterDate(dateDisplay) {
+  const parsed = Date.parse(dateDisplay);
+  return Number.isNaN(parsed) ? Infinity : parsed;
+}
+
+// Orders letters chronologically so ones sharing the same date end up
+// next to each other, regardless of which letter was saved first.
+export function sortLettersByDate(letters) {
+  return [...letters].sort((a, b) => parseLetterDate(a.date) - parseLetterDate(b.date));
+}
+
 // Turns raw title/date/body/closing text into the same { blocks } shape
 // LetterDetailScreen already knows how to render, so hand-written letters
 // and ones composed through the editor look identical on the page.
