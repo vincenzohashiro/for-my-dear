@@ -222,6 +222,9 @@ export default function MergeHeartsGame({ onBack }) {
           <button type="button" className="minigame-restart" onClick={handleRestart}>
             Play Again
           </button>
+          <button type="button" className="editor-exit-link" onClick={onBack}>
+            Back to Games
+          </button>
         </div>
       )}
     </motion.div>

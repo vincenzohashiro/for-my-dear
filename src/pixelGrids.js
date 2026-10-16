@@ -128,3 +128,25 @@ export const AVATAR_GRID = [
   '0101010',
   '0111110',
 ];
+
+// blocky space invader, antennae up
+export const ALIEN_GRID = [
+  '0010100',
+  '0010100',
+  '0111110',
+  '1101011',
+  '1111111',
+  '0101010',
+  '1000001',
+];
+
+
+// desert cactus obstacle
+export const CACTUS_GRID = [
+  '01010',
+  '01010',
+  '11111',
+  '00100',
+  '00100',
+  '00100',
+];

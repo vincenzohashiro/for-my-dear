@@ -8,6 +8,14 @@ import MemoryMatchGame from './minigames/MemoryMatchGame';
 import FlappyHeartGame from './minigames/FlappyHeartGame';
 import WhackAHeartGame from './minigames/WhackAHeartGame';
 import MergeHeartsGame from './minigames/MergeHeartsGame';
+import SnakeGame from './minigames/SnakeGame';
+import RockPaperScissorsGame from './minigames/RockPaperScissorsGame';
+import ColorMemoryGame from './minigames/ColorMemoryGame';
+import CatchHeartsGame from './minigames/CatchHeartsGame';
+import PixelFlapGame from './minigames/PixelFlapGame';
+import PixelRunnerGame from './minigames/PixelRunnerGame';
+import BrickBreakerGame from './minigames/BrickBreakerGame';
+import PixelInvadersGame from './minigames/PixelInvadersGame';
 
 const SCATTER = [
   { type: 'die', value: 3, top: '10%', left: '8%', size: 34 },
@@ -24,6 +32,14 @@ const GAMES = [
   { id: 'flappy', title: 'Flappy Heart', tagline: 'Tap to fly', color: 'var(--blue)' },
   { id: 'whack', title: 'Whack-a-Heart', tagline: 'Quick clicks', color: 'var(--yellow)' },
   { id: 'merge', title: 'Merge Hearts', tagline: 'Slide & combine', color: 'var(--purple)' },
+  { id: 'snake', title: 'Snake', tagline: 'Grow and go', color: 'var(--green)' },
+  { id: 'rps', title: 'Rock Paper Scissors', tagline: 'Beat the CPU', color: 'var(--red)' },
+  { id: 'colors', title: 'Color Memory', tagline: 'Repeat the pattern', color: 'var(--teal)' },
+  { id: 'catch', title: 'Catch the Hearts', tagline: 'Don’t miss one', color: '#ff8c3a' },
+  { id: 'flap', title: 'Pixel Flap', tagline: 'Classic flap & dodge', color: '#4cb24c' },
+  { id: 'runner', title: 'Pixel Runner', tagline: 'Jump the cacti', color: '#c9914a' },
+  { id: 'breaker', title: 'Brick Breaker', tagline: 'Clear the bricks', color: 'var(--yellow)' },
+  { id: 'invaders', title: 'Pixel Invaders', tagline: 'Defend the line', color: 'var(--teal)' },
 ];
 
 const GAME_COMPONENTS = {
@@ -31,6 +47,14 @@ const GAME_COMPONENTS = {
   flappy: FlappyHeartGame,
   whack: WhackAHeartGame,
   merge: MergeHeartsGame,
+  snake: SnakeGame,
+  rps: RockPaperScissorsGame,
+  colors: ColorMemoryGame,
+  catch: CatchHeartsGame,
+  flap: PixelFlapGame,
+  runner: PixelRunnerGame,
+  breaker: BrickBreakerGame,
+  invaders: PixelInvadersGame,
 };
 
 export default function PlayScreen({ onBack }) {

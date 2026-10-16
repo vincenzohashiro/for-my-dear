@@ -112,6 +112,9 @@ export default function WhackAHeartGame({ onBack }) {
           <button type="button" className="minigame-restart" onClick={handleStart}>
             {phase === 'over' ? 'Play Again' : 'Start'}
           </button>
+          <button type="button" className="editor-exit-link" onClick={onBack}>
+            Back to Games
+          </button>
         </div>
       )}
     </motion.div>

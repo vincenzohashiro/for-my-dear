@@ -31,6 +31,7 @@ export default function LetterScreen({ onBack }) {
               body: row.body,
               closing: row.closing,
               colorSeed: row.id,
+              attachments: row.attachments,
             })
           )
         );

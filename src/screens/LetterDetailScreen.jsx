@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import PixelHeart from '../components/PixelHeart';
+import PhotoLightbox from '../components/PhotoLightbox';
 import { renderInline as parseInline } from '../lib/letterUtils';
 
 function renderInline(text) {
@@ -17,6 +18,7 @@ export default function LetterDetailScreen({ letter, onBack }) {
   const [progress, setProgress] = useState(0);
   const [tapHearts, setTapHearts] = useState([]);
   const [scrolledPastHeader, setScrolledPastHeader] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(null);
   const milestonesHitRef = useRef(new Set());
 
   // Reading-progress bar + confetti rewards at 25/50/75/100% scrolled,
@@ -176,6 +178,65 @@ export default function LetterDetailScreen({ letter, onBack }) {
               <div key={i} className="letter-highlight letter-reveal">
                 <p className="letter-highlight-text">{block.text}</p>
                 <p className="letter-highlight-translation">{block.translation}</p>
+              </div>
+            );
+          }
+          if (block.type === 'attachments') {
+            const images = block.items.filter((item) => item.kind === 'image');
+            return (
+              <div key={i} className="letter-attachments letter-reveal">
+                {block.items.map((item) => {
+                  if (item.kind === 'image') {
+                    const imgIndex = images.indexOf(item);
+                    return (
+                      <button
+                        key={item.url}
+                        type="button"
+                        className="letter-attachment-thumb"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setLightboxIndex(imgIndex);
+                        }}
+                      >
+                        <img src={item.url} alt={item.name} />
+                      </button>
+                    );
+                  }
+                  if (item.kind === 'video') {
+                    return (
+                      <video
+                        key={item.url}
+                        src={item.url}
+                        controls
+                        className="letter-attachment-video"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    );
+                  }
+                  return (
+                    <a
+                      key={item.url}
+                      href={item.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="letter-attachment-file"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      &#128206; {item.name}
+                    </a>
+                  );
+                })}
+
+                <AnimatePresence>
+                  {lightboxIndex !== null && (
+                    <PhotoLightbox
+                      photos={images.map((img) => img.url)}
+                      index={lightboxIndex}
+                      onClose={() => setLightboxIndex(null)}
+                      onNavigate={setLightboxIndex}
+                    />
+                  )}
+                </AnimatePresence>
               </div>
             );
           }

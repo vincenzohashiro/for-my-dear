@@ -5,11 +5,24 @@ import { supabase } from '../lib/supabaseClient';
 import PixelHeart from '../components/PixelHeart';
 
 const TODAY = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+const MAX_FILE_BYTES = 50 * 1024 * 1024; // 50MB per file
+const BUCKET = 'letter-attachments';
 
 function autoGrow(el) {
   if (!el) return;
   el.style.height = 'auto';
   el.style.height = `${el.scrollHeight}px`;
+}
+
+function kindOf(file) {
+  if (file.type.startsWith('image/')) return 'image';
+  if (file.type.startsWith('video/')) return 'video';
+  return 'file';
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)}KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
 }
 
 export default function LetterEditorScreen({ onExit }) {
@@ -18,11 +31,46 @@ export default function LetterEditorScreen({ onExit }) {
   const [body, setBody] = useState('');
   const [signoff, setSignoff] = useState('Yours,');
   const [signature, setSignature] = useState('');
+  const [pendingFiles, setPendingFiles] = useState([]);
   const [status, setStatus] = useState('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [uploadLabel, setUploadLabel] = useState('');
   const bodyRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const notConfigured = !supabase;
+
+  const handleFilesChosen = (event) => {
+    const chosen = Array.from(event.target.files || []);
+    event.target.value = '';
+    const accepted = [];
+    const rejected = [];
+    chosen.forEach((file) => {
+      if (file.size > MAX_FILE_BYTES) {
+        rejected.push(file.name);
+        return;
+      }
+      const kind = kindOf(file);
+      accepted.push({
+        id: `${file.name}-${file.size}-${Date.now()}-${Math.random()}`,
+        file,
+        kind,
+        previewUrl: kind !== 'file' ? URL.createObjectURL(file) : null,
+      });
+    });
+    if (accepted.length) setPendingFiles((prev) => [...prev, ...accepted]);
+    if (rejected.length) {
+      setErrorMessage(`Too big (max 50MB), skipped: ${rejected.join(', ')}`);
+    }
+  };
+
+  const removePendingFile = (id) => {
+    setPendingFiles((prev) => {
+      const target = prev.find((f) => f.id === id);
+      if (target?.previewUrl) URL.revokeObjectURL(target.previewUrl);
+      return prev.filter((f) => f.id !== id);
+    });
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -32,11 +80,30 @@ export default function LetterEditorScreen({ onExit }) {
     setStatus('saving');
     setErrorMessage('');
 
+    const attachments = [];
+    for (let i = 0; i < pendingFiles.length; i += 1) {
+      const { file, kind } = pendingFiles[i];
+      setUploadLabel(`Uploading ${i + 1}/${pendingFiles.length}...`);
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name}`;
+      // eslint-disable-next-line no-await-in-loop
+      const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, file);
+      if (uploadError) {
+        setStatus('idle');
+        setUploadLabel('');
+        setErrorMessage(`Couldn't upload ${file.name}: ${uploadError.message}`);
+        return;
+      }
+      const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(path);
+      attachments.push({ name: file.name, kind, url: urlData.publicUrl });
+    }
+    setUploadLabel('');
+
     const { error } = await supabase.from('letters').insert({
       title: title.trim(),
       date_display: dateDisplay.trim(),
       body: body.trim(),
       closing: `${signoff.trim()}\n${signature.trim()}`,
+      attachments,
     });
 
     if (error) {
@@ -62,6 +129,8 @@ export default function LetterEditorScreen({ onExit }) {
     setBody('');
     setSignoff('Yours,');
     setSignature('');
+    pendingFiles.forEach((f) => f.previewUrl && URL.revokeObjectURL(f.previewUrl));
+    setPendingFiles([]);
     setStatus('idle');
   };
 
@@ -141,6 +210,42 @@ export default function LetterEditorScreen({ onExit }) {
           required
         />
 
+        <div className="editor-attachments">
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            onChange={handleFilesChosen}
+            className="editor-file-input"
+            id="editor-file-input"
+          />
+          <label htmlFor="editor-file-input" className="editor-attach-button">
+            + Attach photos / videos / files
+          </label>
+
+          {pendingFiles.length > 0 && (
+            <div className="editor-attachment-list">
+              {pendingFiles.map((item) => (
+                <div key={item.id} className="editor-attachment-chip">
+                  {item.kind === 'image' && <img src={item.previewUrl} alt={item.file.name} />}
+                  {item.kind === 'video' && <video src={item.previewUrl} muted />}
+                  {item.kind === 'file' && <span className="editor-attachment-file-icon">&#128206;</span>}
+                  <span className="editor-attachment-name">{item.file.name}</span>
+                  <span className="editor-attachment-size">{formatBytes(item.file.size)}</span>
+                  <button
+                    type="button"
+                    className="editor-attachment-remove"
+                    onClick={() => removePendingFile(item.id)}
+                    aria-label={`Remove ${item.file.name}`}
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         <input
           className="letter-signoff letter-field"
           type="text"
@@ -162,7 +267,7 @@ export default function LetterEditorScreen({ onExit }) {
         {errorMessage && <p className="editor-error">{errorMessage}</p>}
 
         <button type="submit" className="pixel-button letter-editor-submit" disabled={status === 'saving' || notConfigured}>
-          {status === 'saving' ? 'Saving...' : 'Save Letter'}
+          {status === 'saving' ? uploadLabel || 'Saving...' : 'Save Letter'}
         </button>
       </form>
     </div>

@@ -43,7 +43,7 @@ export function sortLettersByDate(letters) {
 // Turns raw title/date/body/closing text into the same { blocks } shape
 // LetterDetailScreen already knows how to render, so hand-written letters
 // and ones composed through the editor look identical on the page.
-export function buildLetterFromFields({ id, title, dateDisplay, body, closing, colorSeed }) {
+export function buildLetterFromFields({ id, title, dateDisplay, body, closing, colorSeed, attachments }) {
   const paragraphs = body
     .split(/\n\s*\n/)
     .map((p) => p.trim())
@@ -70,6 +70,7 @@ export function buildLetterFromFields({ id, title, dateDisplay, body, closing, c
       { type: 'eyebrow', text: title },
       { type: 'date', text: dateDisplay },
       ...paragraphs.map((text) => ({ type: 'p', text })),
+      ...(attachments && attachments.length ? [{ type: 'attachments', items: attachments }] : []),
       { type: 'signoff', text: signoff },
       { type: 'signature', text: signature },
     ],

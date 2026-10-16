@@ -169,6 +169,9 @@ export default function FlappyHeartGame({ onBack }) {
           <button type="button" className="minigame-restart" onClick={handleStart}>
             Play Again
           </button>
+          <button type="button" className="editor-exit-link" onClick={onBack}>
+            Back to Games
+          </button>
         </div>
       )}
     </motion.div>
