@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabaseClient';
 import PixelHeart from '../components/PixelHeart';
 
 const TODAY = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-const MAX_FILE_BYTES = 50 * 1024 * 1024; // 50MB per file
+const MAX_FILE_BYTES = 50 * 1024 * 1024; // Supabase free plan hard caps uploads at 50MB
 const BUCKET = 'letter-attachments';
 
 function autoGrow(el) {

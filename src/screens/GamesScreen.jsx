@@ -67,6 +67,13 @@ const GAMES = [
     color: 'var(--orange)',
     soft: '#ffdcb8',
   },
+  {
+    id: 'risk-of-rain-2',
+    title: 'Risk of Rain 2',
+    tagline: 'Roguelike Survival',
+    color: 'var(--lime)',
+    soft: '#e4f7bb',
+  },
 ];
 
 export default function GamesScreen({ onBack }) {
