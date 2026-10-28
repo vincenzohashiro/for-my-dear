@@ -4,22 +4,27 @@ import PixelSprite from '../components/PixelSprite';
 import { CAMERA_GRID } from '../pixelGrids';
 import PhotoLightbox from '../components/PhotoLightbox';
 
-// Drop image files into src/assets/photos/<game-id>/ and they show up here
-// automatically — no code changes needed.
-const photoModules = import.meta.glob(
-  '../assets/photos/*/*.{png,jpg,jpeg,webp,PNG,JPG,JPEG,WEBP}',
+// Drop image or video files into src/assets/photos/<game-id>/ and they show
+// up here automatically — no code changes needed.
+const mediaModules = import.meta.glob(
+  '../assets/photos/*/*.{png,jpg,jpeg,webp,PNG,JPG,JPEG,WEBP,mp4,mov,webm,MP4,MOV,WEBM}',
   { eager: true, import: 'default' }
 );
 
-function getPhotos(gameId) {
-  return Object.entries(photoModules)
+const VIDEO_EXTENSIONS = ['mp4', 'mov', 'webm'];
+
+function getMedia(gameId) {
+  return Object.entries(mediaModules)
     .filter(([path]) => path.includes(`/photos/${gameId}/`))
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([, url]) => url);
+    .map(([path, url]) => {
+      const ext = path.split('.').pop().toLowerCase();
+      return { url, kind: VIDEO_EXTENSIONS.includes(ext) ? 'video' : 'image' };
+    });
 }
 
 export default function GameDetailScreen({ game, onBack }) {
-  const photos = getPhotos(game.id);
+  const media = getMedia(game.id);
   const [lightboxIndex, setLightboxIndex] = useState(null);
 
   return (
@@ -34,16 +39,16 @@ export default function GameDetailScreen({ game, onBack }) {
       <p className="arcade-detail-tagline">{game.tagline}</p>
 
       <div className="photo-board">
-        {photos.length === 0 ? (
+        {media.length === 0 ? (
           <div className="photo-empty">
             <PixelSprite grid={CAMERA_GRID} size={40} color="var(--tile-color)" />
             <p>no memories added yet</p>
           </div>
         ) : (
           <div className="photo-gallery">
-            {photos.map((src, i) => (
+            {media.map((item, i) => (
               <motion.button
-                key={src}
+                key={item.url}
                 type="button"
                 className="photo-thumb"
                 initial={{ opacity: 0, y: 10 }}
@@ -53,7 +58,16 @@ export default function GameDetailScreen({ game, onBack }) {
                 whileTap={{ scale: 0.96 }}
                 onClick={() => setLightboxIndex(i)}
               >
-                <img src={src} alt={`${game.title} memory ${i + 1}`} loading="lazy" />
+                {item.kind === 'video' ? (
+                  <>
+                    <video src={item.url} muted preload="metadata" />
+                    <span className="photo-thumb-play" aria-hidden="true">
+                      &#9654;
+                    </span>
+                  </>
+                ) : (
+                  <img src={item.url} alt={`${game.title} memory ${i + 1}`} loading="lazy" />
+                )}
               </motion.button>
             ))}
           </div>
@@ -67,7 +81,7 @@ export default function GameDetailScreen({ game, onBack }) {
       <AnimatePresence>
         {lightboxIndex !== null && (
           <PhotoLightbox
-            photos={photos}
+            photos={media}
             index={lightboxIndex}
             onClose={() => setLightboxIndex(null)}
             onNavigate={setLightboxIndex}

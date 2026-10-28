@@ -74,6 +74,13 @@ const GAMES = [
     color: 'var(--lime)',
     soft: '#e4f7bb',
   },
+  {
+    id: 'deadlock',
+    title: 'Deadlock',
+    tagline: 'Hero Shooter',
+    color: 'var(--cyan)',
+    soft: '#c7f5fc',
+  },
 ];
 
 export default function GamesScreen({ onBack }) {
