@@ -8,6 +8,10 @@ import { supabase } from '../lib/supabaseClient';
 import { buildLetterFromFields, getAuthorFromBlocks, sortLettersByDate } from '../lib/letterUtils';
 import LetterDetailScreen from './LetterDetailScreen';
 
+// Letters hidden from the archive without touching their data in Supabase.
+// Remove an id here to bring that letter back.
+const HIDDEN_LETTER_IDS = ['0648b183-7ec0-46d7-b927-0a45316d0aa1']; // "Assurances"
+
 export default function LetterScreen({ onBack }) {
   const [openLetter, setOpenLetter] = useState(null);
   const [writtenLetters, setWrittenLetters] = useState([]);
@@ -23,17 +27,19 @@ export default function LetterScreen({ onBack }) {
       .then(({ data, error }) => {
         if (cancelled || error || !data) return;
         setWrittenLetters(
-          data.map((row) =>
-            buildLetterFromFields({
-              id: row.id,
-              title: row.title,
-              dateDisplay: row.date_display,
-              body: row.body,
-              closing: row.closing,
-              colorSeed: row.id,
-              attachments: row.attachments,
-            })
-          )
+          data
+            .filter((row) => !HIDDEN_LETTER_IDS.includes(row.id))
+            .map((row) =>
+              buildLetterFromFields({
+                id: row.id,
+                title: row.title,
+                dateDisplay: row.date_display,
+                body: row.body,
+                closing: row.closing,
+                colorSeed: row.id,
+                attachments: row.attachments,
+              })
+            )
         );
       });
 

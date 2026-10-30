@@ -2726,6 +2726,84 @@ form {
   filter: drop-shadow(1px 2px 0 rgba(0, 0, 0, 0.4));
 }
 
+/* ---- chess ---- */
+
+.chess-status {
+  font-size: 0.95rem;
+}
+
+.chess-board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  width: 272px;
+  max-width: 100%;
+  aspect-ratio: 1;
+  border: 3px solid var(--ink);
+  margin-bottom: 0.75rem;
+}
+
+.chess-square {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+}
+
+.chess-square.light {
+  background: var(--parchment);
+}
+
+.chess-square.dark {
+  background: #b08b5a;
+}
+
+.chess-square.selected {
+  background: var(--yellow);
+}
+
+.chess-piece {
+  font-size: clamp(1.1rem, 4.2vw, 1.6rem);
+  line-height: 1;
+  user-select: none;
+}
+
+.chess-piece-w {
+  color: #fff8ec;
+  text-shadow: 0 0 0 var(--ink), 1px 1px 0 var(--ink), -1px -1px 0 var(--ink), 1px -1px 0 var(--ink), -1px 1px 0 var(--ink);
+}
+
+.chess-piece-b {
+  color: #1a1420;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+.chess-move-dot {
+  position: absolute;
+  width: 22%;
+  height: 22%;
+  border-radius: 50%;
+  background: rgba(63, 191, 111, 0.65);
+  pointer-events: none;
+}
+
+.chess-capture-ring {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  border: 3px solid rgba(230, 57, 79, 0.75);
+  pointer-events: none;
+}
+
+.chess-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
 /* ---- mobile responsiveness ---- */
 
 @media (max-width: 480px) {
