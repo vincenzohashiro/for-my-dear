@@ -10,7 +10,7 @@ import LetterDetailScreen from './LetterDetailScreen';
 
 // Letters hidden from the archive without touching their data in Supabase.
 // Remove an id here to bring that letter back.
-const HIDDEN_LETTER_IDS = ['0648b183-7ec0-46d7-b927-0a45316d0aa1']; // "Assurances"
+const HIDDEN_LETTER_IDS = [];
 
 export default function LetterScreen({ onBack }) {
   const [openLetter, setOpenLetter] = useState(null);
