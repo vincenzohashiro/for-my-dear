@@ -2863,7 +2863,7 @@ form {
 .emulator-embed {
   /* Size by whichever runs out first: the box width or the viewport height
      left over after the footer buttons and padding. */
-  width: min(100%, calc((88vh - 10rem) * 4 / 3));
+  width: min(100%, calc((88vh - 12rem) * 4 / 3));
   flex-shrink: 0;
   aspect-ratio: 4 / 3;
   margin-bottom: 0.75rem;
@@ -3024,6 +3024,135 @@ form {
   50% {
     opacity: 0;
   }
+}
+
+.emulator-newtab {
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+/* ---- spelling bee ---- */
+
+.bee-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.bee-lives {
+  display: flex;
+  gap: 0.2rem;
+  font-size: 1.3rem;
+}
+
+.bee-life {
+  color: var(--pink);
+}
+
+.bee-life.lost {
+  color: var(--ink);
+  opacity: 0.2;
+}
+
+.bee-best {
+  font-family: 'VT323', monospace;
+  font-size: 1.1rem;
+  color: var(--ink);
+  opacity: 0.7;
+}
+
+.bee-speaker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.8rem 1.4rem;
+  margin-bottom: 0.8rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.6rem;
+  color: var(--ink);
+  background: var(--yellow);
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  cursor: pointer;
+}
+
+.bee-speaker-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.bee-hints {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
+}
+
+.bee-hint-text {
+  min-height: 1.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.bee-hint-text .pixel-body {
+  font-size: 1.05rem;
+  margin: 0 0 0.3rem;
+}
+
+.bee-sentence {
+  font-style: italic;
+}
+
+.bee-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  margin-bottom: 0.8rem;
+}
+
+.bee-input {
+  width: 100%;
+  text-align: center;
+  font-size: 1.3rem;
+  letter-spacing: 0.15em;
+  text-transform: lowercase;
+}
+
+.bee-feedback,
+.bee-over {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+}
+
+.bee-answer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.2rem;
+  margin: 0;
+  perspective: 400px;
+}
+
+.bee-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.7rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--yellow);
+  border: 2px solid var(--ink);
 }
 
 /* ---- mobile responsiveness ---- */

@@ -320,16 +320,28 @@ export default function RetroEmulatorGame({ onBack }) {
       exit={{ opacity: 0, scale: 0.9 }}
     >
       {activeEmbed ? (
-        <div className="emulator-embed">
-          <iframe
-            src={activeEmbed.src}
-            title={activeEmbed.title}
-            frameBorder="0"
-            scrolling="no"
-            allowFullScreen
-            allow="cross-origin-isolated; fullscreen; gamepad"
-          />
-        </div>
+        <>
+          <div className="emulator-embed">
+            <iframe
+              src={activeEmbed.src}
+              title={activeEmbed.title}
+              frameBorder="0"
+              scrolling="no"
+              allowFullScreen
+              allow="cross-origin-isolated; fullscreen; gamepad"
+            />
+          </div>
+          {/* Some browsers (e.g. SmartScreen) blank the embed with no way to allow it;
+              opening the page directly at least gives a "continue anyway" option. */}
+          <a
+            className="editor-exit-link emulator-newtab"
+            href={activeEmbed.src}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Game blank or blocked? Open it in a new tab &#8599;
+          </a>
+        </>
       ) : !running ? (
         <div className="emulator-picker emulator-picker-wide">
           <h3 className="editor-label emulator-section-label">Game Shelf</h3>
