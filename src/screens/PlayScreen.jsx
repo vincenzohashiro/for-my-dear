@@ -17,6 +17,7 @@ import PixelRunnerGame from './minigames/PixelRunnerGame';
 import BrickBreakerGame from './minigames/BrickBreakerGame';
 import PixelInvadersGame from './minigames/PixelInvadersGame';
 import ChessGame from './minigames/ChessGame';
+import RetroEmulatorGame from './minigames/RetroEmulatorGame';
 
 const SCATTER = [
   { type: 'die', value: 3, top: '10%', left: '8%', size: 34 },
@@ -42,6 +43,7 @@ const GAMES = [
   { id: 'breaker', title: 'Brick Breaker', tagline: 'Clear the bricks', color: 'var(--yellow)' },
   { id: 'invaders', title: 'Pixel Invaders', tagline: 'Defend the line', color: 'var(--teal)' },
   { id: 'chess', title: 'Chess', tagline: '2-player, pass & play', color: 'var(--ink)' },
+  { id: 'emulator', title: 'Retro Emulator', tagline: 'Load your own ROM', color: 'var(--red)' },
 ];
 
 const GAME_COMPONENTS = {
@@ -58,6 +60,7 @@ const GAME_COMPONENTS = {
   breaker: BrickBreakerGame,
   invaders: PixelInvadersGame,
   chess: ChessGame,
+  emulator: RetroEmulatorGame,
 };
 
 export default function PlayScreen({ onBack }) {
