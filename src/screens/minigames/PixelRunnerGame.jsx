@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import PixelSprite from '../../components/PixelSprite';
 import PixelHeart from '../../components/PixelHeart';
 import { CACTUS_GRID } from '../../pixelGrids';
+import { GameScoreboard } from '../../components/Scoreboard';
+import { useRecordScore } from '../../lib/scoreboard';
 
 const AREA_WIDTH = 300;
 const AREA_HEIGHT = 170;
@@ -137,6 +139,8 @@ export default function PixelRunnerGame({ onBack }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 
+  const scoreSaved = useRecordScore('runner', phase === 'over', score);
+
   return (
     <motion.div
       className="minigame-screen"
@@ -177,6 +181,7 @@ export default function PixelRunnerGame({ onBack }) {
         <div className="minigame-overlay">
           <span className="minigame-overlay-title">Game Over</span>
           <span className="minigame-overlay-score">Score: {score}</span>
+          <GameScoreboard game="runner" refreshKey={scoreSaved} />
           <button type="button" className="minigame-restart" onClick={handleStart}>
             Play Again
           </button>

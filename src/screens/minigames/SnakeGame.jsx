@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import PixelHeart from '../../components/PixelHeart';
+import { GameScoreboard } from '../../components/Scoreboard';
+import { useRecordScore } from '../../lib/scoreboard';
 
 const GRID = 12;
 const TICK_MS = 160;
@@ -126,6 +128,8 @@ export default function SnakeGame({ onBack }) {
   const cells = new Set(state.snake.map((c) => `${c.x},${c.y}`));
   const headKey = `${state.snake[0].x},${state.snake[0].y}`;
 
+  const scoreSaved = useRecordScore('snake', over, score);
+
   return (
     <motion.div
       className="minigame-screen"
@@ -169,6 +173,7 @@ export default function SnakeGame({ onBack }) {
         <div className="minigame-overlay">
           <span className="minigame-overlay-title">Game Over</span>
           <span className="minigame-overlay-score">Score: {score}</span>
+          <GameScoreboard game="snake" refreshKey={scoreSaved} />
           <button type="button" className="minigame-restart" onClick={handleRestart}>
             Play Again
           </button>

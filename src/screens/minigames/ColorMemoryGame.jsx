@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { GameScoreboard } from '../../components/Scoreboard';
+import { useRecordScore } from '../../lib/scoreboard';
 
 const PADS = [
   { id: 0, color: 'var(--pink)' },
@@ -67,6 +69,8 @@ export default function ColorMemoryGame({ onBack }) {
     }
   };
 
+  const scoreSaved = useRecordScore('colors', phase === 'over', Math.max(sequence.length - 1, 0));
+
   return (
     <motion.div
       className="minigame-screen"
@@ -117,6 +121,7 @@ export default function ColorMemoryGame({ onBack }) {
         <div className="minigame-overlay">
           <span className="minigame-overlay-title">Oops!</span>
           <span className="minigame-overlay-score">Reached round {sequence.length - 1}</span>
+          <GameScoreboard game="colors" refreshKey={scoreSaved} />
           <button type="button" className="minigame-restart" onClick={handleStart}>
             Play Again
           </button>

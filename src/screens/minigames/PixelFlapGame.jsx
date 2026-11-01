@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import PixelHeart from '../../components/PixelHeart';
+import { GameScoreboard } from '../../components/Scoreboard';
+import { useRecordScore } from '../../lib/scoreboard';
 
 const AREA_WIDTH = 280;
 const AREA_HEIGHT = 360;
@@ -125,6 +127,8 @@ export default function PixelFlapGame({ onBack }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 
+  const scoreSaved = useRecordScore('flap', phase === 'over', score);
+
   return (
     <motion.div
       className="minigame-screen"
@@ -181,6 +185,7 @@ export default function PixelFlapGame({ onBack }) {
         <div className="minigame-overlay">
           <span className="minigame-overlay-title">Game Over</span>
           <span className="minigame-overlay-score">Score: {score}</span>
+          <GameScoreboard game="flap" refreshKey={scoreSaved} />
           <button type="button" className="minigame-restart" onClick={handleStart}>
             Play Again
           </button>

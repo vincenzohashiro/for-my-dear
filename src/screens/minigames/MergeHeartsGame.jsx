@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { GameScoreboard } from '../../components/Scoreboard';
+import { useRecordScore } from '../../lib/scoreboard';
 
 const SIZE = 4;
 
@@ -163,6 +165,8 @@ export default function MergeHeartsGame({ onBack }) {
     setOver(false);
   };
 
+  const scoreSaved = useRecordScore('merge', over, score);
+
   return (
     <motion.div
       className="minigame-screen"
@@ -219,6 +223,7 @@ export default function MergeHeartsGame({ onBack }) {
         <div className="minigame-overlay">
           <span className="minigame-overlay-title">No more moves!</span>
           <span className="minigame-overlay-score">Score: {score}</span>
+          <GameScoreboard game="merge" refreshKey={scoreSaved} />
           <button type="button" className="minigame-restart" onClick={handleRestart}>
             Play Again
           </button>

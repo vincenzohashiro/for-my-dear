@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { GameScoreboard } from '../../components/Scoreboard';
+import { summarize, usePlayer, useRecordScore, useScores } from '../../lib/scoreboard';
 
-const LIVES = 3;
-const BEST_KEY = 'ftd-spelling-bee-best';
-
-// Each tier unlocks once the score passes `from`, so words get harder as you go.
-const TIERS = [
+// Each difficulty has its own word pool, lives, and scoreboard.
+const DIFFICULTIES = [
   {
-    from: 0,
+    id: 'easy',
+    label: 'Easy',
+    tagline: 'Short, everyday words',
+    lives: 5,
+    color: 'var(--green)',
     words: [
       { word: 'heart', definition: 'The organ that pumps blood; also where feelings live.', sentence: 'You have my whole heart.' },
       { word: 'smile', definition: 'A happy expression with the corners of the mouth turned up.', sentence: 'Your smile lights up the room.' },
@@ -21,10 +24,18 @@ const TIERS = [
       { word: 'pirate', definition: 'A robber who sails the seas.', sentence: 'The pirate buried his treasure.' },
       { word: 'sunset', definition: 'The time when the sun goes down in the evening.', sentence: 'We watched the sunset from the hill.' },
       { word: 'dragon', definition: 'A large mythical creature that breathes fire.', sentence: 'The knight was not ready for the dragon.' },
+      { word: 'kitten', definition: 'A baby cat.', sentence: 'The kitten fell asleep in my lap.' },
+      { word: 'cookie', definition: 'A small, sweet baked treat.', sentence: 'Can I have one more cookie?' },
+      { word: 'rainbow', definition: 'An arc of colors in the sky after rain.', sentence: 'A rainbow came out after the storm.' },
+      { word: 'flower', definition: 'The colorful part of a plant that blooms.', sentence: 'I picked a flower just for you.' },
     ],
   },
   {
-    from: 4,
+    id: 'medium',
+    label: 'Medium',
+    tagline: 'Commonly misspelled',
+    lives: 3,
+    color: 'var(--yellow)',
     words: [
       { word: 'adorable', definition: 'So cute that it is hard to resist.', sentence: 'That puppy is adorable.' },
       { word: 'treasure', definition: 'Something very valuable, like gold or someone you love.', sentence: 'You are my favorite treasure.' },
@@ -38,26 +49,25 @@ const TIERS = [
       { word: 'whisper', definition: 'To speak very softly.', sentence: 'She leaned in to whisper a secret.' },
       { word: 'umbrella', definition: 'A folding canopy that keeps the rain off.', sentence: 'We shared one umbrella in the storm.' },
       { word: 'favorite', definition: 'Liked more than all the others.', sentence: 'Pizza is my favorite food.' },
-    ],
-  },
-  {
-    from: 9,
-    words: [
       { word: 'affection', definition: 'A gentle feeling of fondness or liking.', sentence: 'The cat showed its affection by headbutting me.' },
       { word: 'necessary', definition: 'Needed; required.', sentence: 'A second dessert was absolutely necessary.' },
       { word: 'rhythm', definition: 'A strong, regular, repeated pattern of sound or movement.', sentence: 'We danced to the rhythm of the music.' },
-      { word: 'embarrass', definition: 'To make someone feel awkward or ashamed.', sentence: 'Please don’t embarrass me in front of my friends.' },
       { word: 'restaurant', definition: 'A place where you pay to sit and eat meals.', sentence: 'We found a tiny restaurant by the beach.' },
-      { word: 'conscience', definition: 'The inner sense of what is right and wrong.', sentence: 'My conscience would not let me take the last fry.' },
       { word: 'occasion', definition: 'A particular event or time.', sentence: 'This dress is for a special occasion.' },
       { word: 'cinnamon', definition: 'A sweet brown spice from tree bark.', sentence: 'The rolls smelled of cinnamon.' },
-      { word: 'accommodate', definition: 'To provide room for, or to fit in with someone’s needs.', sentence: 'The cabin can accommodate six people.' },
-      { word: 'millennium', definition: 'A period of one thousand years.', sentence: 'The castle stood for nearly a millennium.' },
     ],
   },
   {
-    from: 15,
+    id: 'hard',
+    label: 'Hard',
+    tagline: 'Spelling bee champions only',
+    lives: 3,
+    color: 'var(--red)',
     words: [
+      { word: 'embarrass', definition: 'To make someone feel awkward or ashamed.', sentence: 'Please don’t embarrass me in front of my friends.' },
+      { word: 'conscience', definition: 'The inner sense of what is right and wrong.', sentence: 'My conscience would not let me take the last fry.' },
+      { word: 'accommodate', definition: 'To provide room for, or to fit in with someone’s needs.', sentence: 'The cabin can accommodate six people.' },
+      { word: 'millennium', definition: 'A period of one thousand years.', sentence: 'The castle stood for nearly a millennium.' },
       { word: 'serendipity', definition: 'Finding something good by happy accident.', sentence: 'Meeting you was pure serendipity.' },
       { word: 'mischievous', definition: 'Playfully causing a little trouble.', sentence: 'She gave me a mischievous grin.' },
       { word: 'onomatopoeia', definition: 'A word that sounds like the thing it names, like buzz.', sentence: 'Buzz is an example of onomatopoeia.' },
@@ -82,10 +92,9 @@ function speak(text) {
   window.speechSynthesis.speak(utterance);
 }
 
-function pickWord(score, usedWords) {
-  const tier = [...TIERS].reverse().find((t) => score >= t.from);
-  let pool = tier.words.filter((w) => !usedWords.has(w.word));
-  if (!pool.length) pool = tier.words;
+function pickWord(words, usedWords) {
+  let pool = words.filter((w) => !usedWords.has(w.word));
+  if (!pool.length) pool = words;
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
@@ -95,16 +104,79 @@ function blankOut(sentence, word) {
 }
 
 export default function SpellingBeeGame({ onBack }) {
+  const [difficulty, setDifficulty] = useState(null);
+
+  if (difficulty) {
+    return (
+      <BeeRound
+        key={difficulty.id}
+        difficulty={difficulty}
+        onChangeDifficulty={() => setDifficulty(null)}
+        onBack={onBack}
+      />
+    );
+  }
+
+  return <DifficultyPicker onPick={setDifficulty} onBack={onBack} />;
+}
+
+function DifficultyPicker({ onPick, onBack }) {
+  const { rows } = useScores(0);
+
+  return (
+    <motion.div
+      className="minigame-screen"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+    >
+      <div className="minigame-header">
+        <span className="minigame-title">Spelling Bee</span>
+      </div>
+
+      <p className="pixel-body bee-pick-title">Pick a difficulty</p>
+
+      <div className="bee-difficulties">
+        {DIFFICULTIES.map((d, index) => (
+          <motion.button
+            key={d.id}
+            type="button"
+            className="bee-difficulty"
+            style={{ '--tile-color': d.color }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.07, duration: 0.2 }}
+            whileHover={{ scale: 1.03, y: -2 }}
+            whileTap={{ scale: 0.96 }}
+            onClick={() => onPick(d)}
+          >
+            <span className="bee-difficulty-label">{d.label}</span>
+            <span className="bee-difficulty-tagline">{d.tagline}</span>
+            <span className="bee-difficulty-meta">
+              {d.lives} lives
+              {summarize(rows, `bee-${d.id}`).players.map((p) => (
+                <span key={p.id}> &middot; {p.id} {p.value ?? '-'}</span>
+              ))}
+            </span>
+          </motion.button>
+        ))}
+      </div>
+
+      <div className="rps-footer">
+        <button type="button" className="minigame-exit" onClick={onBack}>
+          Back
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+function BeeRound({ difficulty, onChangeDifficulty, onBack }) {
+  const player = usePlayer();
+  const { words, lives: maxLives } = difficulty;
   const [score, setScore] = useState(0);
-  const [lives, setLives] = useState(LIVES);
-  const [best, setBest] = useState(() => {
-    try {
-      return Number(localStorage.getItem(BEST_KEY)) || 0;
-    } catch {
-      return 0;
-    }
-  });
-  const [current, setCurrent] = useState(() => pickWord(0, new Set()));
+  const [lives, setLives] = useState(maxLives);
+  const [current, setCurrent] = useState(() => pickWord(words, new Set()));
   const [guess, setGuess] = useState('');
   const [hints, setHints] = useState({ definition: false, sentence: false });
   const [feedback, setFeedback] = useState(null); // { correct, word }
@@ -112,6 +184,7 @@ export default function SpellingBeeGame({ onBack }) {
   const inputRef = useRef(null);
 
   const gameOver = lives <= 0;
+  const scoreSaved = useRecordScore(`bee-${difficulty.id}`, gameOver, score);
 
   // Announce each new word like a real bee would.
   useEffect(() => {
@@ -122,9 +195,9 @@ export default function SpellingBeeGame({ onBack }) {
 
   useEffect(() => () => canSpeak && window.speechSynthesis.cancel(), []);
 
-  const nextWord = (newScore) => {
+  const nextWord = () => {
     usedRef.current.add(current.word);
-    setCurrent(pickWord(newScore, usedRef.current));
+    setCurrent(pickWord(words, usedRef.current));
     setGuess('');
     setHints({ definition: false, sentence: false });
     setFeedback(null);
@@ -140,16 +213,7 @@ export default function SpellingBeeGame({ onBack }) {
       setScore((s) => s + 1);
     } else {
       speak(`That is incorrect. The correct spelling is ${current.word.split('').join(', ')}.`);
-      const remaining = lives - 1;
-      setLives(remaining);
-      if (remaining <= 0 && score > best) {
-        setBest(score);
-        try {
-          localStorage.setItem(BEST_KEY, String(score));
-        } catch {
-          /* ignore storage failures */
-        }
-      }
+      setLives((l) => l - 1);
     }
   };
 
@@ -161,8 +225,8 @@ export default function SpellingBeeGame({ onBack }) {
   const restart = () => {
     usedRef.current = new Set();
     setScore(0);
-    setLives(LIVES);
-    setCurrent(pickWord(0, usedRef.current));
+    setLives(maxLives);
+    setCurrent(pickWord(words, usedRef.current));
     setGuess('');
     setHints({ definition: false, sentence: false });
     setFeedback(null);
@@ -184,13 +248,16 @@ export default function SpellingBeeGame({ onBack }) {
 
       <div className="bee-status">
         <span className="bee-lives" aria-label={`${lives} lives left`}>
-          {Array.from({ length: LIVES }, (_, i) => (
+          {Array.from({ length: maxLives }, (_, i) => (
             <span key={i} className={i < lives ? 'bee-life' : 'bee-life lost'}>
               &#9829;
             </span>
           ))}
         </span>
-        <span className="bee-best">best {Math.max(best, score)}</span>
+        <span className="bee-level" style={{ '--tile-color': difficulty.color }}>
+          {difficulty.label}
+        </span>
+        <span className="bee-best">{player}</span>
       </div>
 
       {gameOver ? (
@@ -199,6 +266,7 @@ export default function SpellingBeeGame({ onBack }) {
           <p className="pixel-body">
             The last word was <strong>{feedback?.word}</strong>. You spelled {score} word{score === 1 ? '' : 's'}.
           </p>
+          <GameScoreboard game={`bee-${difficulty.id}`} refreshKey={scoreSaved} />
           <button type="button" className="pixel-button" onClick={restart}>
             Try Again
           </button>
@@ -282,7 +350,7 @@ export default function SpellingBeeGame({ onBack }) {
                     </motion.span>
                   ))}
                 </p>
-                <button type="button" className="pixel-button" onClick={() => nextWord(score)} autoFocus>
+                <button type="button" className="pixel-button" onClick={nextWord} autoFocus>
                   Next word
                 </button>
               </motion.div>
@@ -291,7 +359,10 @@ export default function SpellingBeeGame({ onBack }) {
         </>
       )}
 
-      <div className="rps-footer">
+      <div className="rps-footer bee-footer">
+        <button type="button" className="minigame-exit" onClick={onChangeDifficulty}>
+          Difficulty
+        </button>
         <button type="button" className="minigame-exit" onClick={onBack}>
           Back
         </button>

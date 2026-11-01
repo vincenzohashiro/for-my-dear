@@ -3155,6 +3155,321 @@ form {
   border: 2px solid var(--ink);
 }
 
+.bee-pick-title {
+  margin: 0 0 0.8rem;
+}
+
+.bee-difficulties {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.bee-difficulty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  padding: 0.7rem 0.9rem;
+  text-align: left;
+  color: var(--ink);
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  border-left: 12px solid var(--tile-color);
+  box-shadow: 4px 4px 0 var(--ink);
+  cursor: pointer;
+}
+
+.bee-difficulty-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.75rem;
+}
+
+.bee-difficulty-tagline {
+  font-family: 'VT323', monospace;
+  font-size: 1.1rem;
+}
+
+.bee-difficulty-meta {
+  font-family: 'VT323', monospace;
+  font-size: 0.95rem;
+  opacity: 0.65;
+}
+
+.bee-level {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  padding: 0.25rem 0.45rem;
+  color: var(--ink);
+  background: var(--tile-color);
+  border: 2px solid var(--ink);
+}
+
+.bee-footer {
+  flex-direction: row;
+  justify-content: center;
+}
+
+/* ---- player picker + scoreboard ---- */
+
+.play-who {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 0.5rem 0 1.5rem;
+}
+
+.play-who-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  width: 8rem;
+  padding: 1.1rem 0.5rem;
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  border-bottom: 8px solid var(--tile-color);
+  box-shadow: 4px 4px 0 var(--ink);
+  cursor: pointer;
+}
+
+.play-who-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.7rem;
+  color: var(--ink);
+}
+
+.play-player-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.play-player-name {
+  font-family: 'VT323', monospace;
+  font-size: 1.15rem;
+  color: var(--ink);
+  margin-right: 0.2rem;
+}
+
+.play-scoreboard-chip {
+  background: var(--yellow);
+}
+
+.scoreboard {
+  width: 100%;
+  max-width: 260px;
+  color: var(--ink);
+}
+
+.scoreboard-standing {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+}
+
+.scoreboard-player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.35rem 0.3rem;
+  background: var(--cream);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-top: 5px solid var(--player-color);
+}
+
+.scoreboard-player.leading {
+  box-shadow: 0 0 0 3px var(--yellow);
+}
+
+.scoreboard-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+}
+
+.scoreboard-crown {
+  color: #d9a400;
+  margin-right: 0.25rem;
+}
+
+.scoreboard-value {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.95rem;
+  margin: 0.3rem 0 0.15rem;
+}
+
+.scoreboard-unit {
+  font-family: 'VT323', monospace;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.scoreboard-hub {
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.scoreboard-tally {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-bottom: 0.9rem;
+}
+
+.scoreboard-tally-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 4.5rem;
+  padding: 0.4rem;
+  background: var(--player-color);
+  border: 3px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.scoreboard-tally-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  color: var(--ink);
+}
+
+.scoreboard-tally-num {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.3rem;
+  color: var(--ink);
+  margin-top: 0.3rem;
+}
+
+.scoreboard-tally-vs {
+  font-family: 'VT323', monospace;
+  font-size: 1rem;
+  color: var(--ink);
+  opacity: 0.7;
+}
+
+.scoreboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+  margin-bottom: 0.8rem;
+}
+
+.scoreboard-game {
+  border: 2px solid var(--ink);
+  background: var(--cream);
+  overflow: hidden;
+}
+
+.scoreboard-game-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  background: none;
+  border: none;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.scoreboard-game-title {
+  font-family: 'VT323', monospace;
+  font-size: 1.1rem;
+}
+
+.scoreboard-game-mini {
+  display: flex;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.scoreboard-game-mini span {
+  min-width: 2rem;
+  padding: 0.1rem 0.25rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  text-align: center;
+  border: 2px solid var(--ink);
+  border-bottom: 4px solid var(--player-color);
+}
+
+.scoreboard-game-mini span.leading {
+  background: var(--yellow);
+}
+
+.scoreboard-game-body {
+  padding: 0 0.5rem;
+}
+
+.scoreboard-game-body .scoreboard-standing {
+  margin: 0.2rem 0 0.5rem;
+}
+
+.scoreboard-top {
+  margin: 0 0 0.5rem;
+  padding-left: 1.4rem;
+  font-family: 'VT323', monospace;
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.scoreboard-top li::marker {
+  color: var(--player-color);
+}
+
+.scoreboard-top li span:first-child {
+  display: inline-block;
+  min-width: 4.5rem;
+  color: var(--player-color);
+  font-weight: bold;
+}
+
+.scoreboard-empty,
+.scoreboard-note {
+  font-family: 'VT323', monospace;
+  font-size: 1rem;
+  color: var(--ink);
+  opacity: 0.65;
+  margin: 0 0 0.5rem;
+  text-align: center;
+}
+
+.rps-streak {
+  font-family: 'VT323', monospace;
+  font-size: 1.15rem;
+  color: var(--ink);
+  margin: 0.2rem 0 0.4rem;
+}
+
+.rps-streak + .scoreboard {
+  margin-bottom: 0.8rem;
+}
+
+.bee-over .scoreboard {
+  margin-bottom: 0.2rem;
+}
+
+.chess-sides {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-bottom: 0.5rem;
+  font-family: 'VT323', monospace;
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+
 /* ---- mobile responsiveness ---- */
 
 @media (max-width: 480px) {

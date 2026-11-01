@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import PixelHeart from '../../components/PixelHeart';
+import { GameScoreboard } from '../../components/Scoreboard';
+import { useRecordScore } from '../../lib/scoreboard';
 
 const HOLE_COUNT = 9;
 const ROUND_SECONDS = 20;
@@ -61,6 +63,8 @@ export default function WhackAHeartGame({ onBack }) {
     }, 200 + Math.random() * 300);
   };
 
+  const scoreSaved = useRecordScore('whack', phase === 'over', score);
+
   return (
     <motion.div
       className="minigame-screen"
@@ -109,6 +113,7 @@ export default function WhackAHeartGame({ onBack }) {
               <span className="minigame-overlay-score">Score: {score}</span>
             </>
           )}
+          {phase === 'over' && <GameScoreboard game="whack" refreshKey={scoreSaved} />}
           <button type="button" className="minigame-restart" onClick={handleStart}>
             {phase === 'over' ? 'Play Again' : 'Start'}
           </button>

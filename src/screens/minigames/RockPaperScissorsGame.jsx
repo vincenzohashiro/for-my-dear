@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { GameScoreboard } from '../../components/Scoreboard';
+import { recordScore, usePlayer } from '../../lib/scoreboard';
 
 const CHOICES = [
   { id: 'rock', label: 'Rock', emoji: '✊' },
@@ -17,15 +19,43 @@ function judge(playerId, cpuId) {
 export default function RockPaperScissorsGame({ onBack }) {
   const [tally, setTally] = useState({ win: 0, lose: 0, tie: 0 });
   const [round, setRound] = useState(null);
+  // There's no game over here, so the scoreboard tracks the best win streak.
+  // A streak is banked when it's broken by a loss, a reset, or leaving.
+  const player = usePlayer();
+  const [streak, setStreak] = useState(0);
+  const [scoreSaved, setScoreSaved] = useState(0);
+  const pending = useRef({ streak: 0, player });
+  useEffect(() => {
+    pending.current = { streak, player };
+  });
+
+  const bankStreak = (n) => {
+    if (n > 0 && player) recordScore('rps', player, n).then(() => setScoreSaved((k) => k + 1));
+  };
+
+  useEffect(
+    () => () => {
+      const { streak: n, player: who } = pending.current;
+      if (n > 0 && who) recordScore('rps', who, n);
+    },
+    []
+  );
 
   const play = (choiceId) => {
     const cpuChoice = CHOICES[Math.floor(Math.random() * CHOICES.length)].id;
     const result = judge(choiceId, cpuChoice);
     setTally((t) => ({ ...t, [result]: t[result] + 1 }));
     setRound({ player: choiceId, cpu: cpuChoice, result });
+    if (result === 'win') setStreak((n) => n + 1);
+    if (result === 'lose') {
+      bankStreak(streak);
+      setStreak(0);
+    }
   };
 
   const resetTally = () => {
+    bankStreak(streak);
+    setStreak(0);
     setTally({ win: 0, lose: 0, tie: 0 });
     setRound(null);
   };
@@ -86,6 +116,9 @@ export default function RockPaperScissorsGame({ onBack }) {
           </button>
         ))}
       </div>
+
+      <p className="rps-streak">win streak: {streak}</p>
+      <GameScoreboard game="rps" refreshKey={scoreSaved} />
 
       <div className="rps-footer">
         <button type="button" className="minigame-exit" onClick={onBack}>

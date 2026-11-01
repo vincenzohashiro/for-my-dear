@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import PixelHeart from '../../components/PixelHeart';
+import { GameScoreboard } from '../../components/Scoreboard';
+import { useRecordScore } from '../../lib/scoreboard';
 
 const AREA_WIDTH = 280;
 const AREA_HEIGHT = 340;
@@ -100,6 +102,8 @@ export default function CatchHeartsGame({ onBack }) {
     return () => window.removeEventListener('keydown', handleKey);
   }, [phase]);
 
+  const scoreSaved = useRecordScore('catch', phase === 'over', score);
+
   return (
     <motion.div
       className="minigame-screen"
@@ -143,6 +147,7 @@ export default function CatchHeartsGame({ onBack }) {
               <span className="minigame-overlay-score">Score: {score}</span>
             </>
           )}
+          {phase === 'over' && <GameScoreboard game="catch" refreshKey={scoreSaved} />}
           <button type="button" className="minigame-restart" onClick={handleStart}>
             {phase === 'over' ? 'Play Again' : 'Start'}
           </button>

@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import PixelSprite from '../../components/PixelSprite';
+import { GameScoreboard } from '../../components/Scoreboard';
+import { useRecordScore } from '../../lib/scoreboard';
 import {
   HEART_GRID,
   STAR_GRID,
@@ -77,6 +79,8 @@ export default function MemoryMatchGame({ onBack }) {
     setLocked(false);
   };
 
+  const scoreSaved = useRecordScore('memory', won, moves);
+
   return (
     <motion.div
       className="minigame-screen"
@@ -118,6 +122,7 @@ export default function MemoryMatchGame({ onBack }) {
         <div className="minigame-overlay">
           <span className="minigame-overlay-title">You found them all!</span>
           <span className="minigame-overlay-score">in {moves} moves</span>
+          <GameScoreboard game="memory" refreshKey={scoreSaved} />
           <button type="button" className="minigame-restart" onClick={handleRestart}>
             Play Again
           </button>

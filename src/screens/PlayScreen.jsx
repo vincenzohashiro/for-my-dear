@@ -19,6 +19,8 @@ import PixelInvadersGame from './minigames/PixelInvadersGame';
 import ChessGame from './minigames/ChessGame';
 import RetroEmulatorGame from './minigames/RetroEmulatorGame';
 import SpellingBeeGame from './minigames/SpellingBeeGame';
+import { ScoreboardHub } from '../components/Scoreboard';
+import { PLAYERS, PlayerContext } from '../lib/scoreboard';
 
 const SCATTER = [
   { type: 'die', value: 3, top: '10%', left: '8%', size: 34 },
@@ -68,6 +70,8 @@ const GAME_COMPONENTS = {
 
 export default function PlayScreen({ onBack }) {
   const [activeGame, setActiveGame] = useState(null);
+  // Asked every time the tab opens so each score lands on the right name.
+  const [player, setPlayer] = useState(null);
 
   const ActiveGameComponent = activeGame ? GAME_COMPONENTS[activeGame] : null;
 
@@ -101,8 +105,48 @@ export default function PlayScreen({ onBack }) {
         )}
       </div>
 
+      <PlayerContext.Provider value={player}>
       <AnimatePresence mode="wait">
-        {ActiveGameComponent ? (
+        {!player ? (
+          <motion.div
+            key="who"
+            className="play-board play-board-select"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+          >
+            <h1 className="pixel-heading small">
+              <TypewriterText text="Who's playing?" />
+            </h1>
+            <p className="pixel-body play-subtitle">so your scores go on the board</p>
+
+            <div className="play-who">
+              {PLAYERS.map((p, index) => (
+                <motion.button
+                  key={p.id}
+                  type="button"
+                  className="play-who-option"
+                  style={{ '--tile-color': p.color }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1, duration: 0.2 }}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setPlayer(p.id)}
+                >
+                  <PixelSprite grid={HEART_GRID} size={34} color="var(--tile-color)" />
+                  <span className="play-who-name">{p.id}</span>
+                </motion.button>
+              ))}
+            </div>
+
+            <button type="button" className="play-back" onClick={onBack}>
+              Back
+            </button>
+          </motion.div>
+        ) : activeGame === 'scoreboard' ? (
+          <ScoreboardHub key="scoreboard" onBack={() => setActiveGame(null)} />
+        ) : ActiveGameComponent ? (
           <ActiveGameComponent key={activeGame} onBack={() => setActiveGame(null)} />
         ) : (
           <motion.div
@@ -116,6 +160,22 @@ export default function PlayScreen({ onBack }) {
               <TypewriterText text="Play a Game" />
             </h1>
             <p className="pixel-body play-subtitle">quick minigames, just for fun</p>
+
+            <div className="play-player-bar">
+              <span className="play-player-name">
+                playing as <strong>{player}</strong>
+              </span>
+              <button type="button" className="shelf-chip" onClick={() => setPlayer(null)}>
+                Switch
+              </button>
+              <button
+                type="button"
+                className="shelf-chip play-scoreboard-chip"
+                onClick={() => setActiveGame('scoreboard')}
+              >
+                &#9813; Scoreboard
+              </button>
+            </div>
 
             <div className="play-game-grid">
               {GAMES.map((game, index) => (
@@ -144,6 +204,7 @@ export default function PlayScreen({ onBack }) {
           </motion.div>
         )}
       </AnimatePresence>
+      </PlayerContext.Provider>
     </div>
   );
 }

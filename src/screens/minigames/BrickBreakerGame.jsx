@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { GameScoreboard } from '../../components/Scoreboard';
+import { useRecordScore } from '../../lib/scoreboard';
 
 const AREA_WIDTH = 280;
 const AREA_HEIGHT = 320;
@@ -180,6 +182,8 @@ export default function BrickBreakerGame({ onBack }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paddleX]);
 
+  const scoreSaved = useRecordScore('breaker', phase === 'over' || phase === 'won', score);
+
   return (
     <motion.div
       className="minigame-screen"
@@ -240,6 +244,7 @@ export default function BrickBreakerGame({ onBack }) {
               <span className="minigame-overlay-score">Score: {score}</span>
             </>
           )}
+          {(phase === 'over' || phase === 'won') && <GameScoreboard game="breaker" refreshKey={scoreSaved} />}
           <button type="button" className="minigame-restart" onClick={handleStart}>
             {phase === 'ready' ? 'Start' : 'Play Again'}
           </button>
