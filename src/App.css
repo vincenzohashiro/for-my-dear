@@ -1538,16 +1538,31 @@ form {
 
 /* ---- letter archive (list of monthsary letters) ---- */
 
+/* Full-screen scroll layer so a long archive scrolls over the fixed desk and candle. */
 .letter-archive {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  width: 90%;
-  max-width: 420px;
+  padding: 2.5rem 5% 3rem;
+  overflow-y: auto;
   text-align: center;
+}
+
+.letter-archive > * {
+  flex-shrink: 0;
+}
+
+/* Auto margins center the column when it fits, without clipping the top when it doesn't. */
+.letter-archive > :first-child {
+  margin-top: auto;
+}
+
+.letter-archive > :last-child {
+  margin-bottom: auto;
 }
 
 .letter-archive-subtitle {
@@ -1556,35 +1571,6 @@ form {
   color: var(--parchment);
   opacity: 0.8;
   margin: -0.5rem 0 1rem;
-}
-
-.letter-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-  width: 100%;
-  margin-bottom: 1.5rem;
-}
-
-.letter-list-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-}
-
-.letter-divider {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: -0.2rem 0 0.1rem;
-}
-
-.letter-envelope-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 0.15rem;
 }
 
 .letter-envelope-author {
@@ -1605,16 +1591,61 @@ form {
   color: var(--ink);
 }
 
-.letter-envelope {
+.letter-months {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  width: 100%;
+  max-width: 760px;
+  margin-bottom: 1.5rem;
+}
+
+.letter-month-title {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  margin: 0 0 0.85rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.75rem;
+  color: var(--yellow);
+  text-transform: uppercase;
+  text-align: left;
+}
+
+/* Pixel rule trailing the month name. */
+.letter-month-title::after {
+  content: '';
+  flex: 1;
+  height: 0;
+  border-top: 3px dashed rgba(244, 228, 193, 0.35);
+}
+
+.letter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 1rem;
+}
+
+.letter-envelope {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  min-height: 9.5rem;
   background: var(--parchment);
   border: 3px solid var(--ink);
   box-shadow: 4px 4px 0 var(--ink);
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 0.85rem;
   cursor: pointer;
   text-align: left;
+}
+
+.letter-envelope-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 0.2rem;
 }
 
 .letter-envelope-icon {
@@ -1625,13 +1656,6 @@ form {
   padding: 6px;
 }
 
-.letter-envelope-text {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
 .letter-envelope-date {
   font-family: 'Press Start 2P', monospace;
   font-size: 0.55rem;
@@ -1640,13 +1664,15 @@ form {
 }
 
 .letter-envelope-title {
+  flex: 1 1 auto;
   font-family: 'VT323', monospace;
   font-size: 1.3rem;
+  line-height: 1.1;
   color: var(--ink);
 }
 
 .letter-envelope-open {
-  flex: 0 0 auto;
+  align-self: flex-end;
   font-family: 'Press Start 2P', monospace;
   font-size: 0.5rem;
   color: var(--pink-dark);
@@ -3106,23 +3132,6 @@ form {
   font-style: italic;
 }
 
-.bee-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.6rem;
-  width: 100%;
-  margin-bottom: 0.8rem;
-}
-
-.bee-input {
-  width: 100%;
-  text-align: center;
-  font-size: 1.3rem;
-  letter-spacing: 0.15em;
-  text-transform: lowercase;
-}
-
 .bee-feedback,
 .bee-over {
   display: flex;
@@ -3139,20 +3148,6 @@ form {
   gap: 0.2rem;
   margin: 0;
   perspective: 400px;
-}
-
-.bee-tile {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.5rem;
-  height: 1.7rem;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  color: var(--ink);
-  background: var(--yellow);
-  border: 2px solid var(--ink);
 }
 
 .bee-pick-title {
@@ -3470,6 +3465,524 @@ form {
   color: var(--ink);
 }
 
+/* ---- live multiplayer ---- */
+
+.play-live-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--purple);
+  color: var(--cream);
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  cursor: pointer;
+}
+
+.play-live-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.8rem;
+}
+
+.play-live-tagline {
+  font-family: 'VT323', monospace;
+  font-size: 1.1rem;
+}
+
+.live-presence {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  font-family: 'VT323', monospace;
+  font-size: 1.05rem;
+  color: var(--ink);
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  opacity: 0.55;
+}
+
+.live-pill.here {
+  opacity: 1;
+  border-bottom: 4px solid var(--player-color);
+}
+
+.live-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  background: #9a93a8;
+  border: 2px solid var(--ink);
+}
+
+.live-pill.here .live-dot {
+  background: #3fbf6f;
+  animation: live-blink 1.2s steps(2) infinite;
+}
+
+@keyframes live-blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.live-note {
+  font-family: 'VT323', monospace;
+  font-size: 1.15rem;
+  color: var(--ink);
+  margin: 0 0 0.9rem;
+}
+
+.live-note.ready {
+  color: #2f8f52;
+}
+
+.live-note.warn {
+  color: var(--red);
+}
+
+.live-ellipsis::after {
+  content: '...';
+  animation: live-blink 1.2s steps(2) infinite;
+}
+
+.live-modes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.live-mode {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+  padding: 0.65rem;
+  text-align: left;
+  color: var(--ink);
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  border-left: 10px solid var(--tile-color);
+  box-shadow: 3px 3px 0 var(--ink);
+  cursor: pointer;
+}
+
+.live-mode:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.live-mode-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.55rem;
+  line-height: 1.4;
+}
+
+.live-mode-tagline {
+  font-family: 'VT323', monospace;
+  font-size: 1rem;
+  opacity: 0.75;
+}
+
+.live-waiting {
+  font-family: 'VT323', monospace;
+  font-size: 1.05rem;
+  color: var(--red);
+  margin: 0 0 0.5rem;
+}
+
+.live-your-turn {
+  color: #2f8f52;
+}
+
+.chess-board.live-locked .chess-square {
+  cursor: default;
+}
+
+.chess-square.last-move.light {
+  background: #f3e48a;
+}
+
+.chess-square.last-move.dark {
+  background: #c9b04a;
+}
+
+.live-versus {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+}
+
+.live-versus-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 4.5rem;
+}
+
+.live-versus-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  color: var(--ink);
+}
+
+.live-versus-num {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.4rem;
+  color: var(--ink);
+  margin-top: 0.3rem;
+}
+
+.live-versus-vs {
+  font-family: 'VT323', monospace;
+  font-size: 1.1rem;
+  opacity: 0.6;
+}
+
+.live-turn-note {
+  min-height: 1.4rem;
+  font-family: 'VT323', monospace;
+  font-size: 1.1rem;
+  color: var(--ink);
+  margin: 0.2rem 0 0.5rem;
+}
+
+.rps-choice:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.rps-choice.picked {
+  opacity: 1;
+  background: var(--yellow);
+}
+
+.live-race-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+}
+
+.live-race-chip {
+  font-size: 1.1rem;
+  padding: 0.3rem 0.7rem;
+}
+
+.live-race-stage {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.live-race-hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 92%;
+  max-width: 380px;
+  margin-bottom: 0.6rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--ink);
+  color: var(--cream);
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.4);
+  font-family: 'VT323', monospace;
+  font-size: 1.1rem;
+}
+
+.live-race-side strong {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.7rem;
+  margin-left: 0.2rem;
+}
+
+.live-race-side.done {
+  color: var(--yellow);
+}
+
+.live-race-game {
+  font-size: 0.95rem;
+  opacity: 0.7;
+}
+
+.live-countdown {
+  min-height: 14rem;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.live-countdown-num {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 3rem;
+  color: var(--pink);
+}
+
+.live-race-result {
+  gap: 0.4rem;
+}
+
+.live-race-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+/* ---- spelling bee: hive look ---- */
+
+/* Faint honeycomb behind the bee screens. */
+.bee-screen {
+  background-color: #fff6dc;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='48' viewBox='0 0 28 48'%3E%3Cpath d='M14 0l14 8v16l-14 8L0 24V8z M14 32v16' fill='none' stroke='%23f0d27a' stroke-width='2'/%3E%3C/svg%3E");
+  background-size: 28px 48px;
+}
+
+.bee-mascot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 3.6rem;
+  margin: 0.1rem 0 0.5rem;
+}
+
+.bee-mascot-sprite {
+  display: flex;
+  filter: drop-shadow(2px 2px 0 rgba(43, 33, 64, 0.25));
+}
+
+.bee-bubble {
+  position: relative;
+  padding: 0.35rem 0.6rem;
+  font-family: 'VT323', monospace;
+  font-size: 1.15rem;
+  line-height: 1;
+  color: var(--ink);
+  background: #fff;
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  white-space: nowrap;
+}
+
+/* Little pixel tail pointing back at the bee. */
+.bee-bubble::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin-top: -4px;
+  background: #fff;
+  border-left: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+  transform: translateX(3px) rotate(45deg);
+}
+
+.bee-bubble-happy {
+  background: var(--yellow);
+}
+
+.bee-bubble-happy::before {
+  background: var(--yellow);
+}
+
+.bee-bubble-sad {
+  background: #ffd6dc;
+}
+
+.bee-bubble-sad::before {
+  background: #ffd6dc;
+}
+
+.bee-speaker-icon {
+  position: relative;
+}
+
+.bee-wave {
+  position: absolute;
+  inset: -0.3rem;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.bee-streak {
+  margin: -0.4rem 0 0.2rem;
+  padding: 0.2rem 0.55rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.55rem;
+  color: var(--ink);
+  background: #ffb43d;
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.bee-speller {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  margin-bottom: 0.6rem;
+}
+
+.bee-tiles {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.15rem;
+  min-height: 2.6rem;
+  width: 100%;
+}
+
+.bee-tiles-hint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding-left: 2.6rem;
+  font-family: 'VT323', monospace;
+  font-size: 1.1rem;
+  color: var(--ink);
+  opacity: 0.55;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Hexagon tile: an ink hexagon with a smaller honey hexagon inset on top. */
+.bee-hex {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2.3rem;
+  background: var(--ink);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+
+.bee-hex > span {
+  position: absolute;
+  inset: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--yellow);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+
+.bee-hex.empty > span {
+  background: #fff8e0;
+  animation: live-blink 1s steps(2) infinite;
+}
+
+.was-wrong .bee-hex > span {
+  background: #ff9aa8;
+}
+
+.bee-hex.reveal > span {
+  background: var(--cream);
+}
+
+.bee-hex.good > span {
+  background: #ffc93d;
+}
+
+.bee-answer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.15rem;
+  margin: 0;
+  perspective: 400px;
+}
+
+.bee-keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  width: 100%;
+  user-select: none;
+}
+
+.bee-keyboard.disabled {
+  opacity: 0.55;
+}
+
+.bee-key-row {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.bee-key {
+  flex: 0 1 2rem;
+  min-width: 0;
+  height: 2.4rem;
+  padding: 0;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: #fff8e0;
+  border: 2px solid var(--ink);
+  box-shadow: 0 3px 0 var(--ink);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.bee-key.flash {
+  background: var(--yellow);
+}
+
+.bee-key.wide {
+  flex: 0 1 3.2rem;
+  font-size: 0.5rem;
+}
+
+.bee-key.enter {
+  background: var(--green);
+}
+
+.bee-key:disabled {
+  cursor: default;
+}
+
+.bee-key.enter:disabled {
+  background: #c8e9d3;
+}
+
+.bee-skip {
+  margin: -0.2rem 0 0.4rem;
+}
+
 /* ---- mobile responsiveness ---- */
 
 @media (max-width: 480px) {
@@ -3602,6 +4115,20 @@ form {
 
   .vn-nav-hint {
     font-size: 0.55rem;
+  }
+
+  .letter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+  }
+
+  .letter-envelope {
+    min-height: 8.5rem;
+    padding: 0.6rem;
+  }
+
+  .letter-envelope-title {
+    font-size: 1.15rem;
   }
 
   .letter-archive,

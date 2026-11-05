@@ -5,12 +5,32 @@ import PixelHeart from '../components/PixelHeart';
 import { FLAME_GRID, ENVELOPE_GRID } from '../pixelGrids';
 import { LETTERS } from '../letters';
 import { supabase } from '../lib/supabaseClient';
-import { buildLetterFromFields, getAuthorFromBlocks, sortLettersByDate } from '../lib/letterUtils';
+import {
+  buildLetterFromFields,
+  getAuthorFromBlocks,
+  parseLetterDate,
+  sortLettersByDate,
+} from '../lib/letterUtils';
 import LetterDetailScreen from './LetterDetailScreen';
 
 // Letters hidden from the archive without touching their data in Supabase.
 // Remove an id here to bring that letter back.
 const HIDDEN_LETTER_IDS = [];
+
+// Buckets already-sorted letters into "October 2026"-style months, in order.
+function groupByMonth(letters) {
+  const groups = [];
+  letters.forEach((letter) => {
+    const time = parseLetterDate(letter.date);
+    const label = Number.isFinite(time)
+      ? new Date(time).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+      : 'Undated';
+    const last = groups[groups.length - 1];
+    if (last && last.label === label) last.letters.push(letter);
+    else groups.push({ label, letters: [letter] });
+  });
+  return groups;
+}
 
 export default function LetterScreen({ onBack }) {
   const [openLetter, setOpenLetter] = useState(null);
@@ -48,7 +68,7 @@ export default function LetterScreen({ onBack }) {
     };
   }, []);
 
-  const allLetters = sortLettersByDate([...LETTERS, ...writtenLetters]);
+  const months = groupByMonth(sortLettersByDate([...LETTERS, ...writtenLetters]));
 
   return (
     <div className="letter-screen">
@@ -78,47 +98,45 @@ export default function LetterScreen({ onBack }) {
             <h1 className="pixel-heading small">Letters</h1>
             <p className="letter-archive-subtitle">a little note, every month</p>
 
-            <div className="letter-list">
-              {allLetters.map((letter, index) => {
-                const author = getAuthorFromBlocks(letter.blocks);
-                const showDivider = index > 0 && allLetters[index - 1].date === letter.date;
-                return (
-                  <div key={letter.id} className="letter-list-item">
-                    {showDivider && (
-                      <div className="letter-divider" aria-hidden="true">
-                        <PixelHeart size={14} color="#ff6b9d" />
-                      </div>
-                    )}
-                    <motion.button
-                      type="button"
-                      className="letter-envelope"
-                      style={{ '--tile-color': letter.color }}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.08, duration: 0.2 }}
-                      whileHover={{ scale: 1.03, y: -3 }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={() => setOpenLetter(letter)}
-                    >
-                      <span className="letter-envelope-icon">
-                        <PixelSprite grid={ENVELOPE_GRID} size={26} color="#2b2140" />
-                      </span>
-                      <span className="letter-envelope-text">
-                        <span className="letter-envelope-meta">
-                          <span className="letter-envelope-date">{letter.date}</span>
-                          {author && (
-                            <span className={`letter-envelope-author author-${author.toLowerCase()}`}>
-                              {author}
+            <div className="letter-months">
+              {months.map((month, monthIndex) => (
+                <section key={month.label} className="letter-month">
+                  <h2 className="letter-month-title">{month.label}</h2>
+                  <div className="letter-grid">
+                    {month.letters.map((letter, index) => {
+                      const author = getAuthorFromBlocks(letter.blocks);
+                      return (
+                        <motion.button
+                          key={letter.id}
+                          type="button"
+                          className="letter-envelope"
+                          style={{ '--tile-color': letter.color }}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: (monthIndex * 3 + index) * 0.06, duration: 0.2 }}
+                          whileHover={{ scale: 1.03, y: -3 }}
+                          whileTap={{ scale: 0.97 }}
+                          onClick={() => setOpenLetter(letter)}
+                        >
+                          <span className="letter-envelope-top">
+                            <span className="letter-envelope-icon">
+                              <PixelSprite grid={ENVELOPE_GRID} size={22} color="#2b2140" />
                             </span>
-                          )}
-                        </span>
-                        <span className="letter-envelope-title">{letter.title}</span>
-                      </span>
-                      <span className="letter-envelope-open">Open &rarr;</span>
-                    </motion.button>
+                            {author && (
+                              <span className={`letter-envelope-author author-${author.toLowerCase()}`}>
+                                {author}
+                              </span>
+                            )}
+                          </span>
+                          <span className="letter-envelope-date">{letter.date}</span>
+                          <span className="letter-envelope-title">{letter.title}</span>
+                          <span className="letter-envelope-open">Open &rarr;</span>
+                        </motion.button>
+                      );
+                    })}
                   </div>
-                );
-              })}
+                </section>
+              ))}
             </div>
 
             <button

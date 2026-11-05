@@ -24,6 +24,9 @@ export const SCORE_GAMES = [
   { id: 'bee-easy', title: 'Spelling Bee · Easy', unit: 'words' },
   { id: 'bee-medium', title: 'Spelling Bee · Medium', unit: 'words' },
   { id: 'bee-hard', title: 'Spelling Bee · Hard', unit: 'words' },
+  { id: 'rps-live', title: 'Live · Rock Paper Scissors', unit: 'matches won', total: true },
+  { id: 'bee-race', title: 'Live · Spelling Bee Race', unit: 'races won', total: true },
+  { id: 'race', title: 'Live · Score Race', unit: 'races won', total: true },
 ];
 
 export const gameMeta = (id) => SCORE_GAMES.find((g) => g.id === id);
@@ -111,12 +114,21 @@ export function useScores(refreshKey) {
 export const PlayerContext = createContext(null);
 export const usePlayer = () => useContext(PlayerContext);
 
+// Set by a live score race so every game reports its running score without
+// needing race-specific code of its own.
+export const RaceContext = createContext(null);
+
 // Records one score each time `done` flips to true. Returns a key that changes
 // once the save lands, so scoreboards can refetch.
 export function useRecordScore(game, done, score) {
   const player = usePlayer();
+  const race = useContext(RaceContext);
   const recorded = useRef(false);
   const [savedKey, setSavedKey] = useState(0);
+
+  useEffect(() => {
+    race?.report(score, done);
+  }, [race, score, done]);
 
   useEffect(() => {
     if (!done) {

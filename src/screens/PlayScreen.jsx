@@ -20,6 +20,7 @@ import ChessGame from './minigames/ChessGame';
 import RetroEmulatorGame from './minigames/RetroEmulatorGame';
 import SpellingBeeGame from './minigames/SpellingBeeGame';
 import { ScoreboardHub } from '../components/Scoreboard';
+import LiveHub from './live/LiveHub';
 import { PLAYERS, PlayerContext } from '../lib/scoreboard';
 
 const SCATTER = [
@@ -144,6 +145,8 @@ export default function PlayScreen({ onBack }) {
               Back
             </button>
           </motion.div>
+        ) : activeGame === 'live' ? (
+          <LiveHub key="live" onBack={() => setActiveGame(null)} />
         ) : activeGame === 'scoreboard' ? (
           <ScoreboardHub key="scoreboard" onBack={() => setActiveGame(null)} />
         ) : ActiveGameComponent ? (
@@ -176,6 +179,19 @@ export default function PlayScreen({ onBack }) {
                 &#9813; Scoreboard
               </button>
             </div>
+
+            <motion.button
+              type="button"
+              className="play-live-banner"
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => setActiveGame('live')}
+            >
+              <span className="play-live-title">&#9889; Play Live</span>
+              <span className="play-live-tagline">
+                you vs {PLAYERS.find((p) => p.id !== player)?.id}, on your own phones
+              </span>
+            </motion.button>
 
             <div className="play-game-grid">
               {GAMES.map((game, index) => (
