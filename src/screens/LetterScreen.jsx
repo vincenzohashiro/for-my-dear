@@ -4,18 +4,10 @@ import PixelSprite from '../components/PixelSprite';
 import PixelHeart from '../components/PixelHeart';
 import { FLAME_GRID, ENVELOPE_GRID } from '../pixelGrids';
 import { LETTERS } from '../letters';
-import { supabase } from '../lib/supabaseClient';
-import {
-  buildLetterFromFields,
-  getAuthorFromBlocks,
-  parseLetterDate,
-  sortLettersByDate,
-} from '../lib/letterUtils';
+import { getAuthorFromBlocks, parseLetterDate, sortLettersByDate } from '../lib/letterUtils';
+import { useWhatsNew } from '../lib/whatsNew';
+import { NewBadge } from '../components/WhatsNewBell';
 import LetterDetailScreen from './LetterDetailScreen';
-
-// Letters hidden from the archive without touching their data in Supabase.
-// Remove an id here to bring that letter back.
-const HIDDEN_LETTER_IDS = [];
 
 // Buckets already-sorted letters into "October 2026"-style months, in order.
 function groupByMonth(letters) {
@@ -33,42 +25,19 @@ function groupByMonth(letters) {
 }
 
 export default function LetterScreen({ onBack }) {
-  const [openLetter, setOpenLetter] = useState(null);
-  const [writtenLetters, setWrittenLetters] = useState([]);
+  const { writtenLetters, pendingId, clearPending, markSeen, isNewKey } = useWhatsNew();
+  const allLetters = sortLettersByDate([...LETTERS, ...writtenLetters]);
+  const months = groupByMonth(allLetters);
+  // Opened straight from the notification bell.
+  const [openLetter, setOpenLetter] = useState(() => allLetters.find((l) => l.id === pendingId('letter')) || null);
 
   useEffect(() => {
-    if (!supabase) return;
-    let cancelled = false;
+    clearPending();
+  }, [clearPending]);
 
-    supabase
-      .from('letters')
-      .select('*')
-      .order('created_at', { ascending: true })
-      .then(({ data, error }) => {
-        if (cancelled || error || !data) return;
-        setWrittenLetters(
-          data
-            .filter((row) => !HIDDEN_LETTER_IDS.includes(row.id))
-            .map((row) =>
-              buildLetterFromFields({
-                id: row.id,
-                title: row.title,
-                dateDisplay: row.date_display,
-                body: row.body,
-                closing: row.closing,
-                colorSeed: row.id,
-                attachments: row.attachments,
-              })
-            )
-        );
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const months = groupByMonth(sortLettersByDate([...LETTERS, ...writtenLetters]));
+  useEffect(() => {
+    if (openLetter) markSeen([`letter:${openLetter.id}`]);
+  }, [openLetter, markSeen]);
 
   return (
     <div className="letter-screen">
@@ -118,6 +87,7 @@ export default function LetterScreen({ onBack }) {
                           whileTap={{ scale: 0.97 }}
                           onClick={() => setOpenLetter(letter)}
                         >
+                          <NewBadge count={isNewKey(`letter:${letter.id}`) ? 1 : 0} className="corner" />
                           <span className="letter-envelope-top">
                             <span className="letter-envelope-icon">
                               <PixelSprite grid={ENVELOPE_GRID} size={22} color="#2b2140" />

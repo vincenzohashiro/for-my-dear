@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import GameWorldBackdrop from '../components/GameWorldBackdrop';
 import PixelSprite from '../components/PixelSprite';
 import TypewriterText from '../components/TypewriterText';
+import WhatsNewBell, { NewBadge } from '../components/WhatsNewBell';
+import { useWhatsNew } from '../lib/whatsNew';
 import { HEART_GRID, CAMERA_GRID, ENVELOPE_GRID, CONTROLLER_GRID, STAR_GRID } from '../pixelGrids';
 
 const MENU_ITEMS = [
@@ -14,6 +16,7 @@ const MENU_ITEMS = [
 
 export default function MenuScreen({ onSelect }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const whatsNew = useWhatsNew();
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -35,6 +38,8 @@ export default function MenuScreen({ onSelect }) {
   return (
     <div className="menu-world">
       <GameWorldBackdrop />
+
+      <WhatsNewBell />
 
       <h1 className="menu-title">
         <TypewriterText text="Choose your path" />
@@ -73,6 +78,7 @@ export default function MenuScreen({ onSelect }) {
                 <PixelSprite grid={item.grid} size={74} color="#2b2140" />
               </span>
               <span className="menu-node-sign">{item.label}</span>
+              <NewBadge count={whatsNew?.countFor(item.id)} className="menu-node-new" />
             </motion.button>
           );
         })}

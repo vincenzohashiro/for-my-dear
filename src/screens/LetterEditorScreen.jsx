@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { supabase } from '../lib/supabaseClient';
+import { rememberSeen } from '../lib/whatsNew';
 import PixelHeart from '../components/PixelHeart';
 
 const TODAY = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -98,19 +99,26 @@ export default function LetterEditorScreen({ onExit }) {
     }
     setUploadLabel('');
 
-    const { error } = await supabase.from('letters').insert({
-      title: title.trim(),
-      date_display: dateDisplay.trim(),
-      body: body.trim(),
-      closing: `${signoff.trim()}\n${signature.trim()}`,
-      attachments,
-    });
+    const { data: saved, error } = await supabase
+      .from('letters')
+      .insert({
+        title: title.trim(),
+        date_display: dateDisplay.trim(),
+        body: body.trim(),
+        closing: `${signoff.trim()}\n${signature.trim()}`,
+        attachments,
+      })
+      .select('id')
+      .single();
 
     if (error) {
       setStatus('idle');
       setErrorMessage(error.message);
       return;
     }
+
+    // The writer has obviously seen their own letter; don't flag it as new for them.
+    if (saved?.id) rememberSeen([`letter:${saved.id}`]);
 
     confetti({
       particleCount: 70,

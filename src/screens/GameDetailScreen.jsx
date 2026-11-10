@@ -1,31 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PixelSprite from '../components/PixelSprite';
 import { CAMERA_GRID } from '../pixelGrids';
 import PhotoLightbox from '../components/PhotoLightbox';
-
-// Drop image or video files into src/assets/photos/<game-id>/ and they show
-// up here automatically — no code changes needed.
-const mediaModules = import.meta.glob(
-  '../assets/photos/*/*.{png,jpg,jpeg,webp,PNG,JPG,JPEG,WEBP,mp4,mov,webm,MP4,MOV,WEBM}',
-  { eager: true, import: 'default' }
-);
-
-const VIDEO_EXTENSIONS = ['mp4', 'mov', 'webm'];
-
-function getMedia(gameId) {
-  return Object.entries(mediaModules)
-    .filter(([path]) => path.includes(`/photos/${gameId}/`))
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([path, url]) => {
-      const ext = path.split('.').pop().toLowerCase();
-      return { url, kind: VIDEO_EXTENSIONS.includes(ext) ? 'video' : 'image' };
-    });
-}
+import { getMedia } from '../content/photoGames';
+import { useWhatsNew } from '../lib/whatsNew';
 
 export default function GameDetailScreen({ game, onBack }) {
   const media = getMedia(game.id);
   const [lightboxIndex, setLightboxIndex] = useState(null);
+  const { markSeen } = useWhatsNew();
+
+  // Opening a game's gallery counts as seeing all of its photos.
+  useEffect(() => {
+    markSeen(getMedia(game.id).map((m) => `photo:${m.path}`));
+  }, [game.id, markSeen]);
 
   return (
     <motion.div

@@ -11,6 +11,7 @@ import LetterScreen from './screens/LetterScreen';
 import PlayScreen from './screens/PlayScreen';
 import WaitScreen from './screens/WaitScreen';
 import LetterEditorScreen from './screens/LetterEditorScreen';
+import WhatsNewProvider from './components/WhatsNewProvider';
 import './App.css';
 
 // Flip to true and push again when the site is ready to go live.
@@ -73,7 +74,9 @@ function App() {
         : { onBack: () => setStep('menu'), onNavigate: setStep };
     return (
       <div className="page">
-        <FullscreenScreen {...props} />
+        <WhatsNewProvider onNavigate={setStep} refreshKey={step}>
+          <FullscreenScreen {...props} />
+        </WhatsNewProvider>
       </div>
     );
   }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TypewriterText from '../components/TypewriterText';
 import PixelSprite from '../components/PixelSprite';
@@ -19,6 +19,9 @@ import PixelInvadersGame from './minigames/PixelInvadersGame';
 import ChessGame from './minigames/ChessGame';
 import RetroEmulatorGame from './minigames/RetroEmulatorGame';
 import SpellingBeeGame from './minigames/SpellingBeeGame';
+import { MINIGAMES } from '../content/minigames';
+import { useWhatsNew } from '../lib/whatsNew';
+import { NewBadge } from '../components/WhatsNewBell';
 import { ScoreboardHub } from '../components/Scoreboard';
 import LiveHub from './live/LiveHub';
 import { PLAYERS, PlayerContext } from '../lib/scoreboard';
@@ -31,24 +34,6 @@ const SCATTER = [
   { type: 'die', value: 1, top: '45%', left: '92%', size: 26 },
   { type: 'card', suit: 'heart', top: '82%', left: '48%' },
   { type: 'die', value: 6, top: '8%', left: '46%', size: 24 },
-];
-
-const GAMES = [
-  { id: 'memory', title: 'Memory Match', tagline: 'Find the pairs', color: 'var(--pink)' },
-  { id: 'flappy', title: 'Flappy Heart', tagline: 'Tap to fly', color: 'var(--blue)' },
-  { id: 'whack', title: 'Whack-a-Heart', tagline: 'Quick clicks', color: 'var(--yellow)' },
-  { id: 'merge', title: 'Merge Hearts', tagline: 'Slide & combine', color: 'var(--purple)' },
-  { id: 'snake', title: 'Snake', tagline: 'Grow and go', color: 'var(--green)' },
-  { id: 'rps', title: 'Rock Paper Scissors', tagline: 'Beat the CPU', color: 'var(--red)' },
-  { id: 'colors', title: 'Color Memory', tagline: 'Repeat the pattern', color: 'var(--teal)' },
-  { id: 'catch', title: 'Catch the Hearts', tagline: 'Don’t miss one', color: '#ff8c3a' },
-  { id: 'flap', title: 'Pixel Flap', tagline: 'Classic flap & dodge', color: '#4cb24c' },
-  { id: 'runner', title: 'Pixel Runner', tagline: 'Jump the cacti', color: '#c9914a' },
-  { id: 'breaker', title: 'Brick Breaker', tagline: 'Clear the bricks', color: 'var(--yellow)' },
-  { id: 'invaders', title: 'Pixel Invaders', tagline: 'Defend the line', color: 'var(--teal)' },
-  { id: 'chess', title: 'Chess', tagline: '2-player, pass & play', color: 'var(--ink)' },
-  { id: 'bee', title: 'Spelling Bee', tagline: 'Hear it, spell it', color: 'var(--orange)' },
-  { id: 'emulator', title: 'Retro Emulator', tagline: 'Load your own ROM', color: 'var(--red)' },
 ];
 
 const GAME_COMPONENTS = {
@@ -70,7 +55,17 @@ const GAME_COMPONENTS = {
 };
 
 export default function PlayScreen({ onBack }) {
-  const [activeGame, setActiveGame] = useState(null);
+  const { pendingId, clearPending, markSeen, isNewKey } = useWhatsNew();
+  // Opened straight from the notification bell (after the who's-playing question).
+  const [activeGame, setActiveGame] = useState(() => pendingId('game'));
+
+  useEffect(() => {
+    clearPending();
+  }, [clearPending]);
+
+  useEffect(() => {
+    if (activeGame && player) markSeen([`game:${activeGame}`]);
+  }, [activeGame, player, markSeen]);
   // Asked every time the tab opens so each score lands on the right name.
   const [player, setPlayer] = useState(null);
 
@@ -194,7 +189,7 @@ export default function PlayScreen({ onBack }) {
             </motion.button>
 
             <div className="play-game-grid">
-              {GAMES.map((game, index) => (
+              {MINIGAMES.map((game, index) => (
                 <motion.button
                   key={game.id}
                   type="button"
@@ -210,6 +205,7 @@ export default function PlayScreen({ onBack }) {
                   <PixelSprite grid={HEART_GRID} size={22} color="var(--tile-color)" />
                   <span className="play-game-tile-title">{game.title}</span>
                   <span className="play-game-tile-tagline">{game.tagline}</span>
+                  <NewBadge count={isNewKey(`game:${game.id}`) ? 1 : 0} className="corner" />
                 </motion.button>
               ))}
             </div>

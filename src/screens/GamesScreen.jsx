@@ -1,91 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GameDetailScreen from './GameDetailScreen';
 import BootSequence from './BootSequence';
-
-const GAMES = [
-  {
-    id: 'split-fiction',
-    title: 'Split Fiction',
-    tagline: 'Co-op Sci-Fi Adventure',
-    color: 'var(--pink)',
-    soft: '#ffc9dc',
-  },
-  {
-    id: 'it-takes-two',
-    title: 'It Takes Two',
-    tagline: 'Co-op Story Game',
-    color: 'var(--sky)',
-    soft: '#e3f6ff',
-  },
-  {
-    id: 'minecraft',
-    title: 'Minecraft',
-    tagline: 'Sandbox Survival',
-    color: 'var(--green)',
-    soft: '#bfe9cf',
-  },
-  {
-    id: 'palworld',
-    title: 'Palworld',
-    tagline: 'Creature Survival',
-    color: 'var(--yellow)',
-    soft: '#ffedb0',
-  },
-  {
-    id: 'sea-of-thieves',
-    title: 'Sea of Thieves',
-    tagline: 'Pirate Adventure',
-    color: 'var(--teal)',
-    soft: '#c0ede8',
-  },
-  {
-    id: 'roblox',
-    title: 'Roblox',
-    tagline: 'Endless Minigames',
-    color: 'var(--purple)',
-    soft: '#dccfff',
-  },
-  {
-    id: 'project-zomboid',
-    title: 'Project Zomboid',
-    tagline: 'Zombie Survival',
-    color: 'var(--red)',
-    soft: '#ffd2d5',
-  },
-  {
-    id: 'minecraft-dungeons',
-    title: 'Minecraft Dungeons',
-    tagline: 'Dungeon Crawler',
-    color: 'var(--blue)',
-    soft: '#c6dcf7',
-  },
-  {
-    id: 'sketchheads',
-    title: 'Sketchheads',
-    tagline: 'Drawing Party Game',
-    color: 'var(--orange)',
-    soft: '#ffdcb8',
-  },
-  {
-    id: 'risk-of-rain-2',
-    title: 'Risk of Rain 2',
-    tagline: 'Roguelike Survival',
-    color: 'var(--lime)',
-    soft: '#e4f7bb',
-  },
-  {
-    id: 'deadlock',
-    title: 'Deadlock',
-    tagline: 'Hero Shooter',
-    color: 'var(--cyan)',
-    soft: '#c7f5fc',
-  },
-];
+import { PHOTO_GAMES } from '../content/photoGames';
+import { useWhatsNew } from '../lib/whatsNew';
+import { NewBadge } from '../components/WhatsNewBell';
 
 export default function GamesScreen({ onBack }) {
-  const [selectedGame, setSelectedGame] = useState(null);
-  const [booting, setBooting] = useState(false);
+  const { pendingId, clearPending, countFor } = useWhatsNew();
+  // Opened straight from the notification bell.
+  const [selectedGame, setSelectedGame] = useState(() => PHOTO_GAMES.find((g) => g.id === pendingId('photo')) || null);
+  const [booting, setBooting] = useState(() => Boolean(pendingId('photo')));
+
+  useEffect(() => {
+    clearPending();
+  }, [clearPending]);
 
   return (
     <div className="arcade-screen fullscreen">
@@ -110,7 +39,7 @@ export default function GamesScreen({ onBack }) {
               <h2 className="arcade-marquee">Select Game</h2>
 
               <div className="arcade-grid">
-                {GAMES.map((game, index) => (
+                {PHOTO_GAMES.map((game, index) => (
                   <motion.button
                     key={game.id}
                     type="button"
@@ -128,6 +57,7 @@ export default function GamesScreen({ onBack }) {
                   >
                     <span className="arcade-tile-title">{game.title}</span>
                     <span className="arcade-tile-tagline">{game.tagline}</span>
+                    <NewBadge count={countFor('photos', game.id)} className="corner" />
                   </motion.button>
                 ))}
               </div>
