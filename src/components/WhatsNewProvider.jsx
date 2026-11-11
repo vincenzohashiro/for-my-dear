@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchWrittenLetters } from '../content/writtenLetters';
+import { fetchReminders } from '../lib/reminders';
 import { WhatsNewContext, collectItems, isNew, itemTime, loadStore, saveStore } from '../lib/whatsNew';
 
 // Tracks what's new on the site for this device and lets any screen ask
 // "is this new?", mark things as seen, or deep-link from the bell.
 export default function WhatsNewProvider({ children, onNavigate, refreshKey }) {
   const [writtenLetters, setWrittenLetters] = useState([]);
+  const [reminders, setReminders] = useState([]);
   const [lettersLoaded, setLettersLoaded] = useState(false);
   const [store, setStore] = useState(loadStore);
   const [sessionStart] = useState(() => Date.now());
@@ -18,12 +20,13 @@ export default function WhatsNewProvider({ children, onNavigate, refreshKey }) {
       setWrittenLetters(letters);
       setLettersLoaded(true);
     });
+    fetchReminders().then(({ rows }) => live && setReminders(rows));
     return () => {
       live = false;
     };
   }, [refreshKey]);
 
-  const items = useMemo(() => collectItems(writtenLetters), [writtenLetters]);
+  const items = useMemo(() => collectItems(writtenLetters, reminders), [writtenLetters, reminders]);
 
   // Persist when undated things (photos, older games) were first noticed on this device.
   useEffect(() => {

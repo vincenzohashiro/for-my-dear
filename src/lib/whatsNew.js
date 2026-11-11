@@ -18,7 +18,7 @@ const toTime = (value) => {
 };
 
 // Everything on the site that can be "new", as one flat list.
-export function collectItems(writtenLetters) {
+export function collectItems(writtenLetters, reminders = []) {
   const letters = [...LETTERS, ...writtenLetters].map((letter) => ({
     key: `letter:${letter.id}`,
     kind: 'letter',
@@ -53,7 +53,15 @@ export function collectItems(writtenLetters) {
     title: g.title,
     time: toTime(g.added),
   }));
-  return [...letters, ...chapters, ...photos, ...games];
+  const notes = reminders.map((r) => ({
+    key: `reminder:${r.id}`,
+    kind: 'reminder',
+    step: 'reminders',
+    id: r.person,
+    title: `${r.person} ${r.kind === 'like' ? 'likes' : 'dislikes'}: ${r.text}`,
+    time: toTime(r.created_at),
+  }));
+  return [...letters, ...chapters, ...photos, ...games, ...notes];
 }
 
 // What this device has seen: { firstVisit, seen: [keys], known: { key: firstSeenTime } }.

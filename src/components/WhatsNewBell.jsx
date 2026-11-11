@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PixelSprite from './PixelSprite';
 import { useWhatsNew } from '../lib/whatsNew';
-import { CAMERA_GRID, CONTROLLER_GRID, ENVELOPE_GRID, HEART_GRID } from '../pixelGrids';
+import { CAMERA_GRID, CONTROLLER_GRID, ENVELOPE_GRID, HEART_GRID, NOTE_GRID } from '../pixelGrids';
 
 const BELL_GRID = ['0001000', '0011100', '0111110', '0111110', '0111110', '1111111', '0001000'];
 
@@ -11,6 +11,7 @@ const KINDS = {
   chapter: { label: 'New chapter', grid: HEART_GRID, color: 'var(--pink)' },
   photo: { label: 'New photos', grid: CAMERA_GRID, color: '#4fc3f7' },
   game: { label: 'New game', grid: CONTROLLER_GRID, color: 'var(--purple)' },
+  reminder: { label: 'New reminder', grid: NOTE_GRID, color: 'var(--green)' },
 };
 
 // Photos come in bunches, so they're listed as one row per game.

@@ -4189,6 +4189,358 @@ form {
   border: 2px solid var(--ink);
 }
 
+/* ---- reminders tab: cork board ---- */
+
+.reminders-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  overflow-y: auto;
+  /* Wooden wall planks behind the board. */
+  background: repeating-linear-gradient(90deg, #6b4423 0 46px, #5c3a1e 46px 50px, #74492a 50px 96px, #5c3a1e 96px 100px);
+}
+
+.reminders-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: min(100%, 860px);
+  margin: 0 auto;
+  padding: 2.5rem 1rem 3rem;
+}
+
+.reminders-header {
+  text-align: center;
+}
+
+.reminders-title {
+  margin: 0;
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(1rem, 4vw, 1.5rem);
+  color: var(--yellow);
+  text-shadow: 3px 3px 0 var(--ink);
+}
+
+.reminders-subtitle {
+  margin: 0.6rem 0 0;
+  font-family: 'VT323', monospace;
+  font-size: 1.25rem;
+  color: #f4e4c1;
+}
+
+.reminders-profiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+  width: min(100%, 460px);
+}
+
+.reminders-profile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.85rem 0.5rem;
+  color: var(--ink);
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  border-bottom: 8px solid var(--player-color);
+  box-shadow: 4px 4px 0 var(--ink);
+  cursor: pointer;
+  opacity: 0.75;
+}
+
+.reminders-profile.active {
+  opacity: 1;
+  box-shadow: 4px 4px 0 var(--ink), 0 0 0 4px var(--yellow);
+}
+
+.reminders-avatar {
+  display: flex;
+  padding: 0.4rem;
+  background: #fff;
+  border: 3px solid var(--ink);
+}
+
+.reminders-profile-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.7rem;
+}
+
+.reminders-profile-stats {
+  font-family: 'VT323', monospace;
+  font-size: 1.05rem;
+  opacity: 0.75;
+}
+
+.reminders-board {
+  width: 100%;
+  padding: 1.25rem;
+  /* Cork: a speckled tan surface inside a dark wooden frame. */
+  background-color: #c89a62;
+  background-image:
+    radial-gradient(rgba(90, 55, 25, 0.35) 1px, transparent 1.5px),
+    radial-gradient(rgba(255, 235, 200, 0.25) 1px, transparent 1.5px);
+  background-size: 9px 9px, 13px 13px;
+  background-position: 0 0, 4px 6px;
+  border: 8px solid #3d2412;
+  box-shadow: inset 0 0 0 3px #8a5a2e, 6px 6px 0 rgba(0, 0, 0, 0.45);
+}
+
+.reminders-board-title {
+  display: inline-block;
+  margin: 0 0 1rem;
+  padding: 0.45rem 0.8rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.7rem;
+  color: var(--ink);
+  background: #fff;
+  border: 3px solid var(--ink);
+  border-left: 10px solid var(--player-color);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.reminders-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.reminders-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.reminders-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.reminders-column-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.5rem;
+  padding: 0.5rem 0.65rem;
+  color: var(--ink);
+  background: var(--note-color);
+  border: 3px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.reminders-column.like {
+  --note-color: #d4f3c4;
+  --pin-color: #3fbf6f;
+}
+
+.reminders-column.dislike {
+  --note-color: #ffd6dc;
+  --pin-color: var(--red);
+}
+
+.reminders-column-icon {
+  font-size: 1rem;
+  color: var(--pin-color);
+}
+
+.reminders-column-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.65rem;
+}
+
+.reminders-column-hint {
+  font-family: 'VT323', monospace;
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.reminders-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reminders-note-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.85rem 0.7rem 0.55rem;
+  color: var(--ink);
+  background: var(--note-color);
+  border: 2px solid var(--ink);
+  box-shadow: 3px 4px 0 rgba(43, 33, 64, 0.55);
+}
+
+.reminders-pin {
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  background: var(--pin-color);
+  border: 2px solid var(--ink);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+.reminders-note-text {
+  font-family: 'VT323', monospace;
+  font-size: 1.3rem;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.reminders-note-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.reminders-tag {
+  padding: 0.15rem 0.35rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.42rem;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.7);
+  border: 2px solid var(--ink);
+}
+
+.reminders-remove {
+  width: 1.6rem;
+  height: 1.6rem;
+  padding: 0;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.8rem;
+  line-height: 1;
+  color: var(--ink);
+  background: transparent;
+  border: 2px solid transparent;
+  cursor: pointer;
+  opacity: 0.55;
+}
+
+.reminders-remove:hover,
+.reminders-remove:focus-visible {
+  opacity: 1;
+  border-color: var(--ink);
+}
+
+.reminders-confirm {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.reminders-confirm button {
+  padding: 0.15rem 0.35rem;
+  font-family: 'VT323', monospace;
+  font-size: 1rem;
+  color: var(--ink);
+  background: #fff;
+  border: 2px solid var(--ink);
+  cursor: pointer;
+}
+
+.reminders-confirm button:first-child {
+  color: #fff;
+  background: var(--red);
+}
+
+.reminders-empty {
+  padding: 0.6rem;
+  font-family: 'VT323', monospace;
+  font-size: 1.15rem;
+  color: #3d2412;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.35);
+  border: 2px dashed rgba(61, 36, 18, 0.5);
+}
+
+.reminders-add {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.6rem;
+  background: rgba(255, 248, 230, 0.85);
+  border: 2px solid var(--ink);
+}
+
+.reminders-input {
+  width: 100%;
+  font-size: 1.15rem;
+}
+
+.reminders-add-row {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.reminders-select {
+  flex: 1;
+  min-width: 0;
+  padding: 0.3rem;
+  font-family: 'VT323', monospace;
+  font-size: 1.1rem;
+  color: var(--ink);
+  background: #fff;
+  border: 2px solid var(--ink);
+}
+
+.reminders-add-button {
+  padding: 0.35rem 0.7rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.55rem;
+  color: var(--ink);
+  background: var(--note-color);
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  cursor: pointer;
+}
+
+.reminders-add-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.reminders-note {
+  margin: 1rem 0 0;
+  font-family: 'VT323', monospace;
+  font-size: 1.05rem;
+  color: #3d2412;
+  text-align: center;
+}
+
+.reminders-back {
+  padding: 0.6rem 1.4rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.75rem;
+  color: var(--parchment);
+  background: #3d2412;
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .reminders-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .reminders-board {
+    padding: 1rem 0.75rem;
+  }
+}
+
 /* ---- mobile responsiveness ---- */
 
 @media (max-width: 480px) {

@@ -5,13 +5,14 @@ import PixelSprite from '../components/PixelSprite';
 import TypewriterText from '../components/TypewriterText';
 import WhatsNewBell, { NewBadge } from '../components/WhatsNewBell';
 import { useWhatsNew } from '../lib/whatsNew';
-import { HEART_GRID, CAMERA_GRID, ENVELOPE_GRID, CONTROLLER_GRID, STAR_GRID } from '../pixelGrids';
+import { HEART_GRID, CAMERA_GRID, ENVELOPE_GRID, CONTROLLER_GRID, NOTE_GRID, STAR_GRID } from '../pixelGrids';
 
 const MENU_ITEMS = [
   { id: 'story', label: 'Our Story', grid: HEART_GRID, color: 'var(--pink)', glow: 'rgba(255, 107, 157, 0.65)' },
   { id: 'photos', label: 'Photos', grid: CAMERA_GRID, color: '#4fc3f7', glow: 'rgba(79, 195, 247, 0.65)' },
   { id: 'letter', label: 'Letter', grid: ENVELOPE_GRID, color: 'var(--yellow)', glow: 'rgba(255, 217, 61, 0.65)' },
   { id: 'game', label: 'Play a Game', grid: CONTROLLER_GRID, color: 'var(--purple)', glow: 'rgba(140, 94, 255, 0.65)' },
+  { id: 'reminders', label: 'Reminders', grid: NOTE_GRID, color: 'var(--green)', glow: 'rgba(63, 191, 111, 0.65)' },
 ];
 
 export default function MenuScreen({ onSelect }) {

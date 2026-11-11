@@ -9,6 +9,7 @@ import GamesScreen from './screens/GamesScreen';
 import StoryScreen from './screens/StoryScreen';
 import LetterScreen from './screens/LetterScreen';
 import PlayScreen from './screens/PlayScreen';
+import RemindersScreen from './screens/RemindersScreen';
 import WaitScreen from './screens/WaitScreen';
 import LetterEditorScreen from './screens/LetterEditorScreen';
 import WhatsNewProvider from './components/WhatsNewProvider';
@@ -46,6 +47,7 @@ const FULLSCREEN_STEPS = {
   story: StoryScreen,
   letter: LetterScreen,
   game: PlayScreen,
+  reminders: RemindersScreen,
 };
 
 function App() {
