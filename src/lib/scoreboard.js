@@ -16,7 +16,7 @@ export const SCORE_GAMES = [
   { id: 'rps', title: 'Rock Paper Scissors', unit: 'win streak' },
   { id: 'colors', title: 'Color Memory', unit: 'rounds' },
   { id: 'catch', title: 'Catch the Hearts', unit: 'pts' },
-  { id: 'flap', title: 'Pixel Flap', unit: 'pts' },
+  { id: 'stack', title: 'Heart Tower', unit: 'floors' },
   { id: 'runner', title: 'Pixel Runner', unit: 'pts' },
   { id: 'breaker', title: 'Brick Breaker', unit: 'pts' },
   { id: 'invaders', title: 'Pixel Invaders', unit: 'pts' },

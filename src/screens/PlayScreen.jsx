@@ -12,7 +12,7 @@ import SnakeGame from './minigames/SnakeGame';
 import RockPaperScissorsGame from './minigames/RockPaperScissorsGame';
 import ColorMemoryGame from './minigames/ColorMemoryGame';
 import CatchHeartsGame from './minigames/CatchHeartsGame';
-import PixelFlapGame from './minigames/PixelFlapGame';
+import HeartTowerGame from './minigames/HeartTowerGame';
 import PixelRunnerGame from './minigames/PixelRunnerGame';
 import BrickBreakerGame from './minigames/BrickBreakerGame';
 import PixelInvadersGame from './minigames/PixelInvadersGame';
@@ -45,7 +45,7 @@ const GAME_COMPONENTS = {
   rps: RockPaperScissorsGame,
   colors: ColorMemoryGame,
   catch: CatchHeartsGame,
-  flap: PixelFlapGame,
+  stack: HeartTowerGame,
   runner: PixelRunnerGame,
   breaker: BrickBreakerGame,
   invaders: PixelInvadersGame,

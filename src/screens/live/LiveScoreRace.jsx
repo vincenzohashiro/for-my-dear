@@ -11,7 +11,7 @@ import MergeHeartsGame from '../minigames/MergeHeartsGame';
 import SnakeGame from '../minigames/SnakeGame';
 import ColorMemoryGame from '../minigames/ColorMemoryGame';
 import CatchHeartsGame from '../minigames/CatchHeartsGame';
-import PixelFlapGame from '../minigames/PixelFlapGame';
+import HeartTowerGame from '../minigames/HeartTowerGame';
 import PixelRunnerGame from '../minigames/PixelRunnerGame';
 import BrickBreakerGame from '../minigames/BrickBreakerGame';
 import PixelInvadersGame from '../minigames/PixelInvadersGame';
@@ -21,7 +21,7 @@ const RACE_GAMES = {
   flappy: FlappyHeartGame,
   snake: SnakeGame,
   runner: PixelRunnerGame,
-  flap: PixelFlapGame,
+  stack: HeartTowerGame,
   catch: CatchHeartsGame,
   whack: WhackAHeartGame,
   breaker: BrickBreakerGame,

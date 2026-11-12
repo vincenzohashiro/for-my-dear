@@ -8,7 +8,7 @@ export const MINIGAMES = [
   { id: 'rps', title: 'Rock Paper Scissors', tagline: 'Beat the CPU', color: 'var(--red)' },
   { id: 'colors', title: 'Color Memory', tagline: 'Repeat the pattern', color: 'var(--teal)' },
   { id: 'catch', title: 'Catch the Hearts', tagline: 'Don’t miss one', color: '#ff8c3a' },
-  { id: 'flap', title: 'Pixel Flap', tagline: 'Classic flap & dodge', color: '#4cb24c' },
+  { id: 'stack', title: 'Heart Tower', tagline: 'Drop & stack high', color: '#ff8c3a', added: '2026-11-12' },
   { id: 'runner', title: 'Pixel Runner', tagline: 'Jump the cacti', color: '#c9914a' },
   { id: 'breaker', title: 'Brick Breaker', tagline: 'Clear the bricks', color: 'var(--yellow)' },
   { id: 'invaders', title: 'Pixel Invaders', tagline: 'Defend the line', color: 'var(--teal)' },
