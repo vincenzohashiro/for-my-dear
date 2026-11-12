@@ -122,6 +122,76 @@ export function BeeAnswer({ word, good }) {
   );
 }
 
+// Your spelling next to the real one: red letters were extra or wrong,
+// highlighted ones in the answer are the letters you missed.
+export function BeeCompare({ compare }) {
+  return (
+    <div className="bee-compare">
+      <span className="bee-compare-label">you spelled</span>
+      <p className="bee-answer small">
+        {compare.guess.map((c, i) => (
+          <span key={i} className={`bee-hex ${c.ok ? 'reveal' : 'bad'}`}>
+            <span>{c.letter}</span>
+          </span>
+        ))}
+      </p>
+      <span className="bee-compare-label">correct spelling</span>
+      <p className="bee-answer small">
+        {compare.word.map((c, i) => (
+          <span key={i} className={`bee-hex ${c.ok ? 'reveal' : 'missed'}`}>
+            <span>{c.letter}</span>
+          </span>
+        ))}
+      </p>
+    </div>
+  );
+}
+
+// ---- countdown ----
+
+// A draining honey bar. `onExpire` fires once when time runs out; changing
+// `resetKey` starts a fresh countdown, and `running={false}` freezes it.
+export function BeeTimer({ seconds, running, resetKey, onExpire }) {
+  const [left, setLeft] = useState(seconds);
+  const expireRef = useRef(onExpire);
+  const leftRef = useRef(left);
+  useEffect(() => {
+    expireRef.current = onExpire;
+    leftRef.current = left;
+  });
+
+  useEffect(() => {
+    leftRef.current = seconds;
+    setLeft(seconds);
+  }, [seconds, resetKey]);
+
+  useEffect(() => {
+    if (!running) return undefined;
+    // Pausing and resuming picks up from whatever time was left.
+    const end = Date.now() + leftRef.current * 1000;
+    const timer = setInterval(() => {
+      const remaining = Math.max(0, (end - Date.now()) / 1000);
+      setLeft(remaining);
+      if (remaining <= 0) {
+        clearInterval(timer);
+        expireRef.current?.();
+      }
+    }, 100);
+    return () => clearInterval(timer);
+  }, [running, resetKey]);
+
+  const pct = Math.max(0, Math.min(100, (left / seconds) * 100));
+  const low = left <= 5;
+  return (
+    <div className={`bee-timer${low ? ' low' : ''}`} role="timer" aria-label={`${Math.ceil(left)} seconds left`}>
+      <div className="bee-timer-track">
+        <div className="bee-timer-fill" style={{ width: `${pct}%` }} />
+      </div>
+      <span className="bee-timer-num">{Math.ceil(left)}s</span>
+    </div>
+  );
+}
+
 // ---- tiles + keyboard ----
 
 const KEY_ROWS = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
@@ -130,7 +200,9 @@ const MAX_LETTERS = 18;
 // Letters appear as honeycomb tiles; typing works from the on-screen keys or a
 // real keyboard. `onSpell(guess)` returns true when the guess was right; on
 // false the tiles shake and clear for another go.
-export function BeeSpeller({ onSpell, disabled = false, busyLabel }) {
+// `length` lays out one empty hexagon per letter of the word; `maxLength` caps
+// typing (a little longer when an alternate spelling is accepted).
+export function BeeSpeller({ onSpell, onChange, length, maxLength = length, disabled = false, busyLabel }) {
   const [guess, setGuess] = useState('');
   const [wrong, setWrong] = useState(0);
   const [shaking, setShaking] = useState(false);
@@ -139,7 +211,7 @@ export function BeeSpeller({ onSpell, disabled = false, busyLabel }) {
 
   const type = (ch) => {
     if (disabled) return;
-    setGuess((g) => (g.length < MAX_LETTERS ? g + ch : g));
+    setGuess((g) => (g.length < (maxLength || MAX_LETTERS) ? g + ch : g));
     setFlashKey(ch);
   };
   const back = () => !disabled && setGuess((g) => g.slice(0, -1));
@@ -158,6 +230,11 @@ export function BeeSpeller({ onSpell, disabled = false, busyLabel }) {
   useEffect(() => {
     latest.current = { type, back, enter };
   });
+
+  // Lets the live race show the other player how far along you are.
+  useEffect(() => {
+    onChange?.(guess);
+  }, [guess, onChange]);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -178,6 +255,8 @@ export function BeeSpeller({ onSpell, disabled = false, busyLabel }) {
     return () => clearTimeout(timer);
   }, [flashKey, guess]);
 
+  const slots = Math.max(length || 0, guess.length);
+
   return (
     <div className="bee-speller">
       <motion.div
@@ -185,27 +264,30 @@ export function BeeSpeller({ onSpell, disabled = false, busyLabel }) {
         className={`bee-tiles${shaking ? ' was-wrong' : ''}`}
         animate={wrong ? { x: [0, -12, 12, -7, 7, 0] } : undefined}
         transition={{ duration: 0.38 }}
+        style={{ '--count': slots }}
         aria-live="polite"
-        aria-label={guess ? `typed ${guess}` : 'nothing typed yet'}
+        aria-label={guess ? `typed ${guess}, ${length} letters` : `${length} letters, nothing typed yet`}
       >
-        {guess.split('').map((letter, i) => (
-          <motion.span
-            key={i}
-            className="bee-hex"
-            initial={{ scale: 0, rotate: -30 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: 'spring', stiffness: 500, damping: 18 }}
-          >
-            <span>{letter}</span>
-          </motion.span>
-        ))}
-        {!disabled && guess.length < MAX_LETTERS && (
-          <span className="bee-hex empty">
-            <span />
-          </span>
-        )}
-        {!guess && <span className="bee-tiles-hint">{busyLabel || 'tap the letters'}</span>}
+        {Array.from({ length: slots }, (_, i) => {
+          const letter = guess[i];
+          return letter ? (
+            <motion.span
+              key={`l${i}`}
+              className="bee-hex"
+              initial={{ scale: 0.4, rotate: -30 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 18 }}
+            >
+              <span>{letter}</span>
+            </motion.span>
+          ) : (
+            <span key={`e${i}`} className={`bee-hex empty${i === guess.length && !disabled ? ' cursor' : ''}`}>
+              <span />
+            </span>
+          );
+        })}
       </motion.div>
+      <p className="bee-tiles-hint">{busyLabel || (guess ? 'press spell when ready' : 'tap the letters or type')}</p>
 
       <div className={`bee-keyboard${disabled ? ' disabled' : ''}`}>
         {KEY_ROWS.map((row, r) => (

@@ -44,13 +44,24 @@ function readLocal() {
 
 // Scores live in Supabase so both phones share one board. Until the table
 // exists (or if the network is down) they fall back to this device only.
-export async function recordScore(game, player, score) {
+function saveLocal(game, player, score) {
   const row = { game, player, score, created_at: new Date().toISOString() };
   try {
     localStorage.setItem(LOCAL_KEY, JSON.stringify([...readLocal(), row].slice(-500)));
   } catch {
     /* ignore storage failures */
   }
+}
+
+// In live games only one phone writes the shared result. The other phone keeps
+// its own copy, so both boards agree even before the shared table exists.
+// (Once the table exists the shared rows are what's shown, so this never doubles up.)
+export async function recordLocalScore(game, player, score) {
+  saveLocal(game, player, score);
+}
+
+export async function recordScore(game, player, score) {
+  saveLocal(game, player, score);
   if (supabase) {
     const { error } = await supabase.from(TABLE).insert({ game, player, score });
     if (error) console.warn('Score not synced:', error.message);

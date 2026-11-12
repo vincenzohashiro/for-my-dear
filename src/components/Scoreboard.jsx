@@ -32,10 +32,11 @@ function StandingRow({ summary }) {
 
 // Compact Vinnie-vs-Charmy board, sized to sit inside a game-over overlay.
 export function GameScoreboard({ game, refreshKey = 0 }) {
-  const { rows } = useScores(refreshKey);
+  const { rows, shared, loading } = useScores(refreshKey);
   return (
     <div className="scoreboard scoreboard-compact">
       <StandingRow summary={summarize(rows, game)} />
+      {!loading && !shared && <p className="scoreboard-device-note">saved on this device only</p>}
     </div>
   );
 }

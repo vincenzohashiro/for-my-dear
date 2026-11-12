@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { GameScoreboard } from '../../components/Scoreboard';
 import { useLive, useLiveEvent } from '../../lib/live';
-import { PLAYERS, RaceContext, gameMeta, recordScore } from '../../lib/scoreboard';
+import { PLAYERS, RaceContext, gameMeta, recordLocalScore, recordScore } from '../../lib/scoreboard';
 import { LivePresence, OpponentGone } from './LiveBits';
 import MemoryMatchGame from '../minigames/MemoryMatchGame';
 import FlappyHeartGame from '../minigames/FlappyHeartGame';
@@ -129,12 +129,16 @@ export default function LiveScoreRace({ onExit }) {
     winner = iWin ? player : opponent;
   }
 
-  // Vinnie's phone saves the race win once, for whoever won it.
+  // The race win is saved once for whoever won it: Vinnie's phone writes the
+  // shared board, and the other phone keeps its own copy so both boards match.
   const savedRace = useRef(null);
   useEffect(() => {
-    if (!isHost || !winner || savedRace.current === race.id) return;
+    if (!winner || savedRace.current === race.id) return;
     savedRace.current = race.id;
-    recordScore('race', winner, 1).then(() => setScoreSaved((k) => k + 1));
+    if (isHost) recordScore('race', winner, 1).then(() => setScoreSaved((k) => k + 1));
+    else {
+      recordLocalScore('race', winner, 1).then(() => setScoreSaved((k) => k + 1));
+    }
   }, [isHost, winner, race]);
 
   if (!race) {

@@ -1,10 +1,21 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { GameScoreboard } from '../../components/Scoreboard';
 import { useLive, useLiveEvent } from '../../lib/live';
-import { recordScore } from '../../lib/scoreboard';
-import { CHEERS, DIFFICULTIES, OOPS, blankOut, canSpeak, honeyBurst, speak } from '../../lib/bee';
-import { BeeAnswer, BeeMascot, BeeSpeaker, BeeSpeller } from '../minigames/BeeParts';
+import { recordLocalScore, recordScore } from '../../lib/scoreboard';
+import {
+  CHEERS,
+  DIFFICULTIES,
+  OOPS,
+  blankOut,
+  canSpeak,
+  compareSpelling,
+  honeyBurst,
+  isCorrect,
+  maxLetters,
+  speak,
+} from '../../lib/bee';
+import { BeeAnswer, BeeCompare, BeeMascot, BeeSpeaker, BeeSpeller, BeeTimer } from '../minigames/BeeParts';
 import { LivePresence, OpponentGone } from './LiveBits';
 
 const WORDS_PER_RACE = 8;
@@ -29,6 +40,8 @@ export default function LiveBeeRace({ onExit }) {
   const { isHost, send, player, opponent } = live;
   const [race, setRace] = useState(null);
   const [scoreSaved, setScoreSaved] = useState(0);
+  // How many letters the other person has typed for the current word.
+  const [theirTyping, setTheirTyping] = useState({ key: '', letters: 0 });
   const raceRef = useRef(race);
   useEffect(() => {
     raceRef.current = race;
@@ -57,12 +70,13 @@ export default function LiveBeeRace({ onExit }) {
     });
   };
 
-  // Host only: the first claim on a word wins it; `by: null` means it was skipped.
-  const decide = (index, by) => {
+  // Host only: the first correct spelling to arrive wins the word; `by: null`
+  // means it was skipped or the clock ran out.
+  const decide = (index, by, timedOut = false) => {
     const current = raceRef.current;
     if (!current || current.done || current.index !== index || current.solvedBy !== undefined) return;
     const points = by ? { ...current.points, [by]: current.points[by] + 1 } : current.points;
-    publish({ ...current, solvedBy: by, points });
+    publish({ ...current, solvedBy: by, points, timedOut });
   };
 
   const claim = (kind) => {
@@ -83,6 +97,15 @@ export default function LiveBeeRace({ onExit }) {
   useLiveEvent('bee-correct', ({ id, index, from }) => isHost && id === raceRef.current?.id && decide(index, from));
   useLiveEvent('bee-skip', ({ id, index }) => isHost && id === raceRef.current?.id && decide(index, null));
   useLiveEvent('bee-reset', () => isHost && publish(null));
+  useLiveEvent('bee-typing', ({ id, index, letters }) => setTheirTyping({ key: `${id}-${index}`, letters }));
+
+  const sendTyping = useCallback(
+    (guess) => {
+      const current = raceRef.current;
+      if (current) send('bee-typing', { id: current.id, index: current.index, letters: guess.length });
+    },
+    [send]
+  );
 
   // Host brings a (re)joining phone up to speed.
   const { opponentHere } = live;
@@ -103,15 +126,35 @@ export default function LiveBeeRace({ onExit }) {
     return () => clearTimeout(timer);
   }, [isHost, race, send]);
 
-  // Host saves the race win once, for whoever won it.
+  // The referee's clock: when a word runs out of time, nobody gets the point.
+  // It restarts only when a new word starts (clockKey), not on every update.
+  const decideRef = useRef(decide);
+  useEffect(() => {
+    decideRef.current = decide;
+  });
+  const clockKey = race && !race.done && race.solvedBy === undefined ? `${race.id}-${race.index}` : null;
+  const clockSeconds = race ? DIFFICULTIES.find((d) => d.id === race.difficulty).seconds : 0;
+  useEffect(() => {
+    if (!isHost || !clockKey) return undefined;
+    const index = raceRef.current.index;
+    const timer = setTimeout(() => decideRef.current(index, null, true), clockSeconds * 1000);
+    return () => clearTimeout(timer);
+  }, [isHost, clockKey, clockSeconds]);
+
+  // The win is saved once for whoever won it: Vinnie's phone writes the shared
+  // board, and the other phone keeps its own copy so both scoreboards match.
   const savedRace = useRef(null);
   useEffect(() => {
-    if (!isHost || !race?.done || savedRace.current === race.id) return;
+    if (!race?.done || savedRace.current === race.id) return;
     savedRace.current = race.id;
     const mine = race.points[player];
     const theirs = race.points[opponent];
     if (mine === theirs) return;
-    recordScore('bee-race', mine > theirs ? player : opponent, 1).then(() => setScoreSaved((k) => k + 1));
+    const winner = mine > theirs ? player : opponent;
+    if (isHost) recordScore('bee-race', winner, 1).then(() => setScoreSaved((k) => k + 1));
+    else {
+      recordLocalScore('bee-race', winner, 1).then(() => setScoreSaved((k) => k + 1));
+    }
   }, [isHost, race, player, opponent]);
 
   return (
@@ -165,7 +208,15 @@ export default function LiveBeeRace({ onExit }) {
               <span className="live-versus-num">{race.points[opponent]}</span>
             </span>
           </div>
-          {!race.done && <BeeWord key={`${race.id}-${race.index}`} race={race} onClaim={claim} />}
+          {!race.done && (
+            <BeeWord
+              key={`${race.id}-${race.index}`}
+              race={race}
+              onClaim={claim}
+              onTyping={sendTyping}
+              theirLetters={theirTyping.key === `${race.id}-${race.index}` ? theirTyping.letters : 0}
+            />
+          )}
         </>
       )}
 
@@ -202,10 +253,12 @@ export default function LiveBeeRace({ onExit }) {
   );
 }
 
-function BeeWord({ race, onClaim }) {
+function BeeWord({ race, onClaim, onTyping, theirLetters }) {
   const live = useLive();
   const current = findWord(race.difficulty, race.order[race.index]);
+  const seconds = DIFFICULTIES.find((d) => d.id === race.difficulty).seconds;
   const [wrong, setWrong] = useState(0);
+  const [lastTry, setLastTry] = useState('');
   const [hints, setHints] = useState({ definition: false, sentence: false });
   const [claimed, setClaimed] = useState(false);
   const solved = race.solvedBy !== undefined;
@@ -223,12 +276,13 @@ function BeeWord({ race, onClaim }) {
 
   const spell = (guess) => {
     if (solved || claimed) return true;
-    if (guess === current.word) {
+    if (isCorrect(current, guess)) {
       setClaimed(true);
       onClaim('correct');
       return true;
     }
     setWrong((n) => n + 1);
+    setLastTry(guess);
     return false;
   };
 
@@ -239,24 +293,31 @@ function BeeWord({ race, onClaim }) {
 
   // The mascot reacts to the race: cheers for you, sulks when the other phone was quicker.
   let mood = 'idle';
-  let line = 'Race you!';
+  let line = 'First to spell it wins!';
   if (solved) {
     mood = iGotIt ? 'happy' : race.solvedBy ? 'sad' : 'think';
     line = iGotIt
       ? CHEERS[race.index % CHEERS.length]
       : race.solvedBy
         ? `${race.solvedBy} was quicker!`
-        : 'Skipped! Next one...';
+        : race.timedOut
+          ? "Time's up!"
+          : 'Skipped! Next one...';
   } else if (wrong) {
     mood = 'sad';
     line = OOPS[(wrong - 1) % OOPS.length];
+  } else if (theirLetters > 0) {
+    line = `${live.opponent} is typing...`;
   }
 
   return (
     <>
-      <BeeMascot mood={mood} moodKey={`${race.solvedBy}-${wrong}`} line={line} />
+      <div className="bee-stage">
+        <BeeMascot mood={mood} moodKey={`${race.solvedBy}-${wrong}`} line={line} />
+        <BeeSpeaker onSay={() => speak(current.word)} label={canSpeak ? 'Say the word' : 'Sound unavailable'} />
+      </div>
 
-      <BeeSpeaker onSay={() => speak(current.word)} label={canSpeak ? 'Say the word' : 'Sound unavailable'} />
+      <BeeTimer seconds={seconds} running={!solved} resetKey={`${race.id}-${race.index}`} />
 
       <div className="bee-hints">
         <button
@@ -285,13 +346,36 @@ function BeeWord({ race, onClaim }) {
       {solved ? (
         <motion.div className="bee-feedback" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
           <p className={`rps-result ${iGotIt ? 'rps-result-win' : race.solvedBy ? 'rps-result-lose' : 'rps-result-tie'}`}>
-            {iGotIt ? 'You got it!' : race.solvedBy ? `${race.solvedBy} got it!` : 'Skipped'}
+            {iGotIt
+              ? 'You got it first!'
+              : race.solvedBy
+                ? `${race.solvedBy} got it first!`
+                : race.timedOut
+                  ? "Time's up!"
+                  : 'Skipped'}
           </p>
-          <BeeAnswer word={current.word} good={iGotIt} />
+          {!iGotIt && lastTry ? (
+            <BeeCompare compare={compareSpelling(lastTry, current.word)} />
+          ) : (
+            <BeeAnswer word={current.word} good={iGotIt} />
+          )}
         </motion.div>
       ) : (
         <>
-          <BeeSpeller onSpell={spell} disabled={claimed} busyLabel={claimed ? 'checking...' : undefined} />
+          <p className="bee-race-typing" aria-live="polite">
+            {live.opponent}:{' '}
+            {Array.from({ length: current.word.length }, (_, i) => (
+              <span key={i} className={`bee-race-dot${i < theirLetters ? ' on' : ''}`} />
+            ))}
+          </p>
+          <BeeSpeller
+            onSpell={spell}
+            onChange={onTyping}
+            length={current.word.length}
+            maxLength={maxLetters(current)}
+            disabled={claimed}
+            busyLabel={claimed ? 'checking...' : undefined}
+          />
           <button type="button" className="editor-exit-link bee-skip" onClick={() => onClaim('skip')}>
             Skip this word
           </button>

@@ -7,6 +7,7 @@ export const DIFFICULTIES = [
     label: 'Easy',
     tagline: 'Short, everyday words',
     lives: 5,
+    seconds: 30,
     color: 'var(--green)',
     words: [
       { word: 'heart', definition: 'The organ that pumps blood; also where feelings live.', sentence: 'You have my whole heart.' },
@@ -32,6 +33,7 @@ export const DIFFICULTIES = [
     label: 'Medium',
     tagline: 'Commonly misspelled',
     lives: 3,
+    seconds: 60,
     color: 'var(--yellow)',
     words: [
       { word: 'adorable', definition: 'So cute that it is hard to resist.', sentence: 'That puppy is adorable.' },
@@ -45,7 +47,7 @@ export const DIFFICULTIES = [
       { word: 'surprise', definition: 'Something unexpected.', sentence: 'The party was a total surprise.' },
       { word: 'whisper', definition: 'To speak very softly.', sentence: 'She leaned in to whisper a secret.' },
       { word: 'umbrella', definition: 'A folding canopy that keeps the rain off.', sentence: 'We shared one umbrella in the storm.' },
-      { word: 'favorite', definition: 'Liked more than all the others.', sentence: 'Pizza is my favorite food.' },
+      { word: 'favorite', alts: ['favourite'], definition: 'Liked more than all the others.', sentence: 'Pizza is my favorite food.' },
       { word: 'affection', definition: 'A gentle feeling of fondness or liking.', sentence: 'The cat showed its affection by headbutting me.' },
       { word: 'necessary', definition: 'Needed; required.', sentence: 'A second dessert was absolutely necessary.' },
       { word: 'rhythm', definition: 'A strong, regular, repeated pattern of sound or movement.', sentence: 'We danced to the rhythm of the music.' },
@@ -59,6 +61,7 @@ export const DIFFICULTIES = [
     label: 'Hard',
     tagline: 'Spelling bee champions only',
     lives: 3,
+    seconds: 120,
     color: 'var(--red)',
     words: [
       { word: 'embarrass', definition: 'To make someone feel awkward or ashamed.', sentence: 'Please don’t embarrass me in front of my friends.' },
@@ -68,7 +71,7 @@ export const DIFFICULTIES = [
       { word: 'serendipity', definition: 'Finding something good by happy accident.', sentence: 'Meeting you was pure serendipity.' },
       { word: 'mischievous', definition: 'Playfully causing a little trouble.', sentence: 'She gave me a mischievous grin.' },
       { word: 'onomatopoeia', definition: 'A word that sounds like the thing it names, like buzz.', sentence: 'Buzz is an example of onomatopoeia.' },
-      { word: 'bougainvillea', definition: 'A climbing plant with bright pink or purple flowers.', sentence: 'The wall was covered in bougainvillea.' },
+      { word: 'bougainvillea', alts: ['bougainvillaea'], definition: 'A climbing plant with bright pink or purple flowers.', sentence: 'The wall was covered in bougainvillea.' },
       { word: 'connoisseur', definition: 'An expert judge in matters of taste.', sentence: 'He is a connoisseur of instant noodles.' },
       { word: 'liaison', definition: 'A link or close relationship between people or groups.', sentence: 'She acted as liaison between the two teams.' },
       { word: 'silhouette', definition: 'The dark outline of someone against a lighter background.', sentence: 'Her silhouette stood against the sunset.' },
@@ -90,6 +93,48 @@ export function speak(text) {
 }
 
 // Hide the word itself in the example sentence so it can't just be copied.
+// Accepts the listed spelling or a recognized alternate (e.g. British "favourite").
+export function isCorrect(entry, guess) {
+  const clean = guess.trim().toLowerCase();
+  return clean === entry.word || (entry.alts || []).includes(clean);
+}
+
+// Longest accepted spelling, so typing isn't cut off before an alternate fits.
+export const maxLetters = (entry) => Math.max(entry.word.length, ...(entry.alts || []).map((w) => w.length));
+
+// Lines up a guess against the real word (longest common subsequence) so the
+// reveal can point at exactly which letters were extra and which were missing.
+export function compareSpelling(guess, word) {
+  const a = guess.toLowerCase();
+  const b = word;
+  const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i -= 1) {
+    for (let j = b.length - 1; j >= 0; j -= 1) {
+      dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    }
+  }
+  const guessOk = Array(a.length).fill(false);
+  const wordOk = Array(b.length).fill(false);
+  let i = 0;
+  let j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) {
+      guessOk[i] = true;
+      wordOk[j] = true;
+      i += 1;
+      j += 1;
+    } else if (dp[i + 1][j] >= dp[i][j + 1]) {
+      i += 1;
+    } else {
+      j += 1;
+    }
+  }
+  return {
+    guess: a.split('').map((letter, k) => ({ letter, ok: guessOk[k] })),
+    word: b.split('').map((letter, k) => ({ letter, ok: wordOk[k] })),
+  };
+}
+
 export function blankOut(sentence, word) {
   return sentence.replace(new RegExp(word, 'ig'), (m) => '_'.repeat(m.length));
 }

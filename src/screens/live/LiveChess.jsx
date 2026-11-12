@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { GameScoreboard } from '../../components/Scoreboard';
 import { PIECE_GLYPHS, createInitialGame, getLegalMoves, playMove } from '../../lib/chessEngine';
 import { useLive, useLiveEvent } from '../../lib/live';
-import { PLAYERS, recordScore } from '../../lib/scoreboard';
+import { PLAYERS, recordLocalScore, recordScore } from '../../lib/scoreboard';
 import { LivePresence, OpponentGone } from './LiveBits';
 
 // Colors alternate every game so nobody is always stuck with Black.
@@ -25,6 +25,16 @@ export default function LiveChess({ onExit }) {
   const myColor = white === live.player ? 'w' : 'b';
   const names = { w: white, b: white === live.player ? live.opponent : live.player };
   const over = game.status === 'checkmate' || game.status === 'stalemate';
+
+  // The winner's phone saves the win to the shared board (in the move handler);
+  // the losing phone keeps its own copy so both scoreboards agree.
+  const mirroredRound = useRef(null);
+  const loserSees = game.status === 'checkmate' && names[game.winner] !== live.player;
+  useEffect(() => {
+    if (!loserSees || mirroredRound.current === match.round) return;
+    mirroredRound.current = match.round;
+    recordLocalScore('chess', live.opponent, 1).then(() => setScoreSaved((k) => k + 1));
+  }, [loserSees, match.round, live.opponent]);
   const myTurn = game.turn === myColor && !over;
 
   const share = (next) => {

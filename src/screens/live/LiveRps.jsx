@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GameScoreboard } from '../../components/Scoreboard';
 import { useLive, useLiveEvent } from '../../lib/live';
-import { recordScore } from '../../lib/scoreboard';
+import { recordLocalScore, recordScore } from '../../lib/scoreboard';
 import { LivePresence, OpponentGone } from './LiveBits';
 
 const TARGET = 5;
@@ -63,13 +63,17 @@ export default function LiveRps({ onExit }) {
     if (opponentHere) send('rps-sync', { id: matchRef.current.id, picks: matchRef.current.mine });
   }, [opponentHere, send]);
 
-  // Only the winner's phone saves the match win.
+  // The winner's phone saves the match win to the shared board; the loser's
+  // phone keeps its own copy so both scoreboards agree.
   const savedMatch = useRef(null);
   useEffect(() => {
-    if (winner !== 'me' || savedMatch.current === match.id) return;
+    if (!winner || savedMatch.current === match.id) return;
     savedMatch.current = match.id;
-    recordScore('rps-live', live.player, 1).then(() => setScoreSaved((k) => k + 1));
-  }, [winner, match.id, live.player]);
+    if (winner === 'me') recordScore('rps-live', live.player, 1).then(() => setScoreSaved((k) => k + 1));
+    else {
+      recordLocalScore('rps-live', live.opponent, 1).then(() => setScoreSaved((k) => k + 1));
+    }
+  }, [winner, match.id, live.player, live.opponent]);
 
   const pick = (choice) => {
     if (myPick || winner) return;

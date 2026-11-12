@@ -2,8 +2,20 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GameScoreboard } from '../../components/Scoreboard';
 import { summarize, usePlayer, useRecordScore, useScores } from '../../lib/scoreboard';
-import { BeeAnswer, BeeMascot, BeeSpeaker, BeeSpeller } from './BeeParts';
-import { CHEERS, DIFFICULTIES, OOPS, blankOut, canSpeak, honeyBurst, pickLine, speak } from '../../lib/bee';
+import { BeeAnswer, BeeCompare, BeeMascot, BeeSpeaker, BeeSpeller, BeeTimer } from './BeeParts';
+import {
+  CHEERS,
+  DIFFICULTIES,
+  OOPS,
+  blankOut,
+  canSpeak,
+  compareSpelling,
+  honeyBurst,
+  isCorrect,
+  maxLetters,
+  pickLine,
+  speak,
+} from '../../lib/bee';
 
 function pickWord(words, usedWords) {
   let pool = words.filter((w) => !usedWords.has(w.word));
@@ -134,10 +146,17 @@ function BeeRound({ difficulty, onChangeDifficulty, onBack }) {
     };
   }, [showingAnswer]);
 
+  const loseLife = (line) => {
+    speak(`The correct spelling is ${current.word.split('').join(', ')}.`);
+    setLives((l) => l - 1);
+    setStreak(0);
+    react('sad', lives - 1 <= 0 ? 'Bzzz... game over' : line);
+  };
+
   const spell = (guess) => {
     if (feedback) return true;
-    const correct = guess === current.word;
-    setFeedback({ correct, word: current.word });
+    const correct = isCorrect(current, guess);
+    setFeedback({ correct, word: current.word, compare: correct ? null : compareSpelling(guess, current.word) });
     if (correct) {
       const nextStreak = streak + 1;
       speak('Correct!');
@@ -146,13 +165,16 @@ function BeeRound({ difficulty, onChangeDifficulty, onBack }) {
       honeyBurst(nextStreak % 5 === 0);
       react('happy', nextStreak >= 3 ? `${nextStreak} in a row!` : pickLine(CHEERS));
     } else {
-      speak(`That is incorrect. The correct spelling is ${current.word.split('').join(', ')}.`);
-      setLives((l) => l - 1);
-      setStreak(0);
-      react('sad', lives - 1 <= 0 ? 'Bzzz... game over' : pickLine(OOPS));
+      loseLife(pickLine(OOPS));
     }
     // A wrong spelling still ends this word: the answer is shown instead of a retry.
     return true;
+  };
+
+  const timeUp = () => {
+    if (feedback) return;
+    setFeedback({ correct: false, timeout: true, word: current.word });
+    loseLife("Time's up!");
   };
 
   const revealHint = (kind) => {
@@ -224,8 +246,6 @@ function BeeRound({ difficulty, onChangeDifficulty, onBack }) {
         )}
       </AnimatePresence>
 
-      <BeeMascot mood={mascot.mood} moodKey={mascot.key} line={mascot.line} />
-
       {gameOver ? (
         <div className="bee-over">
           <p className="rps-result rps-result-lose">Out of the bee!</p>
@@ -239,7 +259,17 @@ function BeeRound({ difficulty, onChangeDifficulty, onBack }) {
         </div>
       ) : (
         <>
-          <BeeSpeaker onSay={() => speak(current.word)} label={canSpeak ? 'Say the word' : 'Sound unavailable'} />
+          <div className="bee-stage">
+            <BeeMascot mood={mascot.mood} moodKey={mascot.key} line={mascot.line} />
+            <BeeSpeaker onSay={() => speak(current.word)} label={canSpeak ? 'Say the word' : 'Sound unavailable'} />
+          </div>
+
+          <BeeTimer
+            seconds={difficulty.seconds}
+            running={!feedback}
+            resetKey={`${round}-${current.word}`}
+            onExpire={timeUp}
+          />
 
           <div className="bee-hints">
             <button
@@ -269,15 +299,24 @@ function BeeRound({ difficulty, onChangeDifficulty, onBack }) {
           {feedback ? (
             <motion.div className="bee-feedback" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
               <p className={`rps-result ${feedback.correct ? 'rps-result-win' : 'rps-result-lose'}`}>
-                {feedback.correct ? 'Correct!' : 'The answer was'}
+                {feedback.correct ? 'Correct!' : feedback.timeout ? "Time's up! The word was" : 'Not quite'}
               </p>
-              <BeeAnswer word={feedback.word} good={feedback.correct} />
+              {feedback.compare ? (
+                <BeeCompare compare={feedback.compare} />
+              ) : (
+                <BeeAnswer word={feedback.word} good={feedback.correct} />
+              )}
               <button type="button" className="pixel-button" onClick={nextWord}>
                 Next word
               </button>
             </motion.div>
           ) : (
-            <BeeSpeller key={`${round}-${current.word}`} onSpell={spell} />
+            <BeeSpeller
+              key={`${round}-${current.word}`}
+              onSpell={spell}
+              length={current.word.length}
+              maxLength={maxLetters(current)}
+            />
           )}
         </>
       )}

@@ -3849,28 +3849,23 @@ form {
 }
 
 .bee-tiles {
+  container-type: inline-size;
   position: relative;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
   align-items: center;
-  gap: 0.15rem;
+  gap: 0.2rem;
   min-height: 2.6rem;
   width: 100%;
 }
 
 .bee-tiles-hint {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  padding-left: 2.6rem;
+  margin: -0.35rem 0 0;
   font-family: 'VT323', monospace;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   color: var(--ink);
   opacity: 0.55;
-  white-space: nowrap;
-  pointer-events: none;
 }
 
 /* Hexagon tile: an ink hexagon with a smaller honey hexagon inset on top. */
@@ -3900,7 +3895,21 @@ form {
 
 .bee-hex.empty > span {
   background: #fff8e0;
+}
+
+.bee-hex.empty.cursor > span {
   animation: live-blink 1s steps(2) infinite;
+}
+
+/* Inside the typing row every slot shrinks to fit, so long words stay on one line. */
+.bee-tiles .bee-hex {
+  width: min(2.4rem, calc((100cqw - (var(--count) - 1) * 0.2rem) / var(--count)));
+  height: auto;
+  aspect-ratio: 0.87;
+}
+
+.bee-tiles .bee-hex > span {
+  font-size: min(0.8rem, calc(45cqw / var(--count)));
 }
 
 .was-wrong .bee-hex > span {
@@ -4538,6 +4547,160 @@ form {
 
   .reminders-board {
     padding: 1rem 0.75rem;
+  }
+}
+
+/* ---- spelling bee: wider layout, timer, comparison ---- */
+
+/* The bee screens get more room than the other minigames: a wide keyboard is
+   much easier to type on, and long words fit in one row of tiles. */
+.minigame-screen.bee-screen {
+  width: 94%;
+  max-width: 680px;
+  max-height: 94vh;
+}
+
+.bee-stage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.bee-stage .bee-mascot {
+  margin: 0;
+}
+
+.bee-stage .bee-speaker {
+  margin-bottom: 0;
+}
+
+.bee-timer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-bottom: 0.6rem;
+}
+
+.bee-timer-track {
+  flex: 1;
+  height: 0.9rem;
+  background: #fff8e0;
+  border: 3px solid var(--ink);
+}
+
+.bee-timer-fill {
+  height: 100%;
+  background: repeating-linear-gradient(90deg, #ffc93d 0 10px, #ffb43d 10px 20px);
+  transition: width 0.1s linear;
+}
+
+.bee-timer-num {
+  min-width: 2.6rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.6rem;
+  text-align: right;
+  color: var(--ink);
+}
+
+.bee-timer.low .bee-timer-fill {
+  background: var(--red);
+}
+
+.bee-timer.low .bee-timer-num {
+  color: var(--red);
+  animation: live-blink 0.5s steps(2) infinite;
+}
+
+.bee-compare {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.bee-compare-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.45rem;
+  text-transform: uppercase;
+  color: var(--ink);
+  opacity: 0.7;
+}
+
+.bee-answer.small .bee-hex {
+  width: 1.7rem;
+  height: 1.95rem;
+}
+
+.bee-answer.small .bee-hex > span {
+  font-size: 0.6rem;
+}
+
+/* Extra or wrong letters in your spelling. */
+.bee-hex.bad > span {
+  color: #fff;
+  background: var(--red);
+}
+
+/* Letters you missed, highlighted in the correct spelling. */
+.bee-hex.missed > span {
+  background: #7ee0a0;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+.bee-race-typing {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  margin: 0 0 0.6rem;
+  font-family: 'VT323', monospace;
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+.bee-race-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  background: #fff8e0;
+  border: 2px solid var(--ink);
+}
+
+.bee-race-dot.on {
+  background: var(--pink);
+}
+
+.scoreboard-device-note {
+  margin: 0.3rem 0 0;
+  font-family: 'VT323', monospace;
+  font-size: 0.95rem;
+  color: inherit;
+  opacity: 0.75;
+}
+
+@media (min-width: 700px) {
+  .bee-keyboard {
+    gap: 0.4rem;
+  }
+
+  .bee-key-row {
+    gap: 0.35rem;
+  }
+
+  .bee-key {
+    flex-basis: 3rem;
+    height: 2.9rem;
+    font-size: 0.75rem;
+  }
+
+  .bee-key.wide {
+    flex-basis: 4.6rem;
+    font-size: 0.6rem;
   }
 }
 
