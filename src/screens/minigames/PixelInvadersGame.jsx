@@ -5,6 +5,8 @@ import PixelHeart from '../../components/PixelHeart';
 import { ALIEN_GRID } from '../../pixelGrids';
 import { GameScoreboard } from '../../components/Scoreboard';
 import { useRecordScore } from '../../lib/scoreboard';
+import GameStage from '../../components/GameStage';
+import GameHud from '../../components/GameHud';
 
 const AREA_WIDTH = 280;
 const AREA_HEIGHT = 340;
@@ -180,7 +182,7 @@ export default function PixelInvadersGame({ onBack }) {
 
   return (
     <motion.div
-      className="minigame-screen"
+      className="minigame-screen game-theme theme-invaders"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
@@ -190,42 +192,46 @@ export default function PixelInvadersGame({ onBack }) {
         <span className="minigame-score">Score: {score}</span>
       </div>
 
-      <div
-        className="invaders-area"
-        onMouseMove={(e) => phase === 'playing' && moveShipTo(e.clientX, e.currentTarget)}
-        onTouchMove={(e) => {
-          if (phase !== 'playing') return;
-          e.preventDefault();
-          moveShipTo(e.touches[0].clientX, e.currentTarget);
-        }}
-        onClick={fire}
-      >
-        {aliens.map((a) => (
-          <div
-            key={a.id}
-            className="invaders-alien"
-            style={{
-              left: GRID_LEFT + groupRef.current.x + a.col * ALIEN_SPACING_X,
-              top: GRID_TOP + groupRef.current.y + a.row * ALIEN_SPACING_Y,
-            }}
-          >
-            <PixelSprite grid={ALIEN_GRID} size={ALIEN_SIZE} color="var(--green)" />
-          </div>
-        ))}
+      <GameHud game="invaders" score={score} done={phase === 'over' || phase === 'won'} />
 
-        {bullets.map((b) => (
-          <div key={b.id} className="invaders-bullet" style={{ left: b.x, top: b.y }} />
-        ))}
-
+      <GameStage>
         <div
-          className="invaders-ship"
-          style={{ left: shipX - SHIP_WIDTH / 2, top: SHIP_Y, width: SHIP_WIDTH, height: SHIP_HEIGHT }}
+          className="invaders-area"
+          onMouseMove={(e) => phase === 'playing' && moveShipTo(e.clientX, e.currentTarget)}
+          onTouchMove={(e) => {
+            if (phase !== 'playing') return;
+            e.preventDefault();
+            moveShipTo(e.touches[0].clientX, e.currentTarget);
+          }}
+          onClick={fire}
         >
-          <PixelHeart size={SHIP_WIDTH} color="var(--pink)" />
+          {aliens.map((a) => (
+            <div
+              key={a.id}
+              className="invaders-alien"
+              style={{
+                left: GRID_LEFT + groupRef.current.x + a.col * ALIEN_SPACING_X,
+                top: GRID_TOP + groupRef.current.y + a.row * ALIEN_SPACING_Y,
+              }}
+            >
+              <PixelSprite grid={ALIEN_GRID} size={ALIEN_SIZE} color="var(--green)" />
+            </div>
+          ))}
+  
+          {bullets.map((b) => (
+            <div key={b.id} className="invaders-bullet" style={{ left: b.x, top: b.y }} />
+          ))}
+  
+          <div
+            className="invaders-ship"
+            style={{ left: shipX - SHIP_WIDTH / 2, top: SHIP_Y, width: SHIP_WIDTH, height: SHIP_HEIGHT }}
+          >
+            <PixelHeart size={SHIP_WIDTH} color="var(--pink)" />
+          </div>
+  
+          {phase === 'ready' && <div className="flappy-hint">Move + tap to fire</div>}
         </div>
-
-        {phase === 'ready' && <div className="flappy-hint">Move + tap to fire</div>}
-      </div>
+      </GameStage>
 
       <button type="button" className="minigame-exit" onClick={onBack}>
         Back

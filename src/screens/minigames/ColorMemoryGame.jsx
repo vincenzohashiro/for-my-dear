@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { GameScoreboard } from '../../components/Scoreboard';
 import { useRecordScore } from '../../lib/scoreboard';
+import GameStage from '../../components/GameStage';
+import GameHud from '../../components/GameHud';
 
 const PADS = [
   { id: 0, color: 'var(--pink)' },
@@ -73,7 +75,7 @@ export default function ColorMemoryGame({ onBack }) {
 
   return (
     <motion.div
-      className="minigame-screen"
+      className="minigame-screen game-theme theme-colors"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
@@ -83,18 +85,22 @@ export default function ColorMemoryGame({ onBack }) {
         <span className="minigame-score">Round: {Math.max(sequence.length - 1, 0)}</span>
       </div>
 
-      <div className="memory-pad-grid">
-        {PADS.map((pad) => (
-          <button
-            key={pad.id}
-            type="button"
-            className={`memory-pad${activePad === pad.id ? ' active' : ''}`}
-            style={{ '--pad-color': pad.color }}
-            onClick={() => handlePadClick(pad.id)}
-            disabled={phase !== 'input'}
-          />
-        ))}
-      </div>
+      <GameHud game="colors" score={Math.max(sequence.length - 1, 0)} done={phase === 'over'} />
+
+      <GameStage>
+        <div className="memory-pad-grid">
+          {PADS.map((pad) => (
+            <button
+              key={pad.id}
+              type="button"
+              className={`memory-pad${activePad === pad.id ? ' active' : ''}`}
+              style={{ '--pad-color': pad.color }}
+              onClick={() => handlePadClick(pad.id)}
+              disabled={phase !== 'input'}
+            />
+          ))}
+        </div>
+      </GameStage>
 
       <p className="pixel-body memory-pad-hint">
         {phase === 'idle' && 'Watch, then repeat the pattern'}

@@ -42,40 +42,67 @@ function readLocal() {
   }
 }
 
-// Scores live in Supabase so both phones share one board. Until the table
-// exists (or if the network is down) they fall back to this device only.
-function saveLocal(game, player, score) {
-  const row = { game, player, score, created_at: new Date().toISOString() };
+function writeLocal(rows) {
   try {
-    localStorage.setItem(LOCAL_KEY, JSON.stringify([...readLocal(), row].slice(-500)));
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(rows.slice(-500)));
   } catch {
     /* ignore storage failures */
   }
 }
 
-// In live games only one phone writes the shared result. The other phone keeps
-// its own copy, so both boards agree even before the shared table exists.
-// (Once the table exists the shared rows are what's shown, so this never doubles up.)
+// Scores live in Supabase so both phones share one board. Until the table
+// exists (or if the network is down) they fall back to this device only.
+// `uploaded` marks rows already in the shared table; `mirror` marks a live
+// result copied from the other phone (that phone uploads the real one).
+function saveLocal(game, player, score, flags = {}) {
+  const row = { game, player, score, created_at: new Date().toISOString(), ...flags };
+  writeLocal([...readLocal(), row]);
+}
+
 export async function recordLocalScore(game, player, score) {
-  saveLocal(game, player, score);
+  saveLocal(game, player, score, { mirror: true });
 }
 
 export async function recordScore(game, player, score) {
-  saveLocal(game, player, score);
+  let uploaded = false;
   if (supabase) {
     const { error } = await supabase.from(TABLE).insert({ game, player, score });
     if (error) console.warn('Score not synced:', error.message);
+    else uploaded = true;
   }
+  saveLocal(game, player, score, { uploaded });
+}
+
+// Once the shared table exists, scores this phone saved while offline (or
+// before the table was set up) are uploaded once, so no history is lost.
+let uploading = null;
+async function uploadPending() {
+  const pending = readLocal().filter((r) => !r.uploaded && !r.mirror);
+  if (!pending.length) return;
+  const { error } = await supabase
+    .from(TABLE)
+    .insert(pending.map(({ game, player, score, created_at }) => ({ game, player, score, created_at })));
+  if (error) return;
+  writeLocal(readLocal().map((r) => (!r.uploaded && !r.mirror ? { ...r, uploaded: true } : r)));
 }
 
 export async function fetchScores() {
   if (supabase) {
-    const { data, error } = await supabase
-      .from(TABLE)
-      .select('game, player, score, created_at')
-      .order('created_at', { ascending: false })
-      .limit(5000);
-    if (!error) return { rows: data, shared: true };
+    const query = () =>
+      supabase
+        .from(TABLE)
+        .select('game, player, score, created_at')
+        .order('created_at', { ascending: false })
+        .limit(5000);
+    const first = await query();
+    if (!first.error) {
+      const hasPending = readLocal().some((r) => !r.uploaded && !r.mirror);
+      if (!hasPending) return { rows: first.data, shared: true };
+      uploading = uploading || uploadPending().finally(() => (uploading = null));
+      await uploading;
+      const fresh = await query();
+      return { rows: fresh.error ? first.data : fresh.data, shared: true };
+    }
   }
   return { rows: readLocal(), shared: false };
 }

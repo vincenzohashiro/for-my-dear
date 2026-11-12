@@ -13,6 +13,8 @@ import {
   PAW_GRID,
   SKULL_GRID,
 } from '../../pixelGrids';
+import GameStage from '../../components/GameStage';
+import GameHud from '../../components/GameHud';
 
 const ICONS = [
   { grid: HEART_GRID, color: 'var(--pink)' },
@@ -83,7 +85,7 @@ export default function MemoryMatchGame({ onBack }) {
 
   return (
     <motion.div
-      className="minigame-screen"
+      className="minigame-screen game-theme theme-memory"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
@@ -93,26 +95,30 @@ export default function MemoryMatchGame({ onBack }) {
         <span className="minigame-score">Moves: {moves}</span>
       </div>
 
-      <div className="memory-grid">
-        {deck.map((card, index) => {
-          const isFaceUp = flipped.includes(index) || matched.includes(index);
-          const icon = ICONS[card.iconIndex];
-          return (
-            <button
-              key={card.key}
-              type="button"
-              className={`memory-card${isFaceUp ? ' face-up' : ''}`}
-              onClick={() => handleFlip(index)}
-            >
-              {isFaceUp ? (
-                <PixelSprite grid={icon.grid} size={20} color={icon.color} />
-              ) : (
-                <PixelSprite grid={HEART_GRID} size={14} color="rgba(43,33,64,0.25)" />
-              )}
-            </button>
-          );
-        })}
-      </div>
+      <GameHud game="memory" score={moves} done={won} />
+
+      <GameStage>
+        <div className="memory-grid">
+          {deck.map((card, index) => {
+            const isFaceUp = flipped.includes(index) || matched.includes(index);
+            const icon = ICONS[card.iconIndex];
+            return (
+              <button
+                key={card.key}
+                type="button"
+                className={`memory-card${isFaceUp ? ' face-up' : ''}`}
+                onClick={() => handleFlip(index)}
+              >
+                {isFaceUp ? (
+                  <PixelSprite grid={icon.grid} size={20} color={icon.color} />
+                ) : (
+                  <PixelSprite grid={HEART_GRID} size={14} color="rgba(43,33,64,0.25)" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </GameStage>
 
       <button type="button" className="minigame-exit" onClick={onBack}>
         Back

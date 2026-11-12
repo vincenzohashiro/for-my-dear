@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import PixelHeart from '../../components/PixelHeart';
 import { GameScoreboard } from '../../components/Scoreboard';
 import { useRecordScore } from '../../lib/scoreboard';
+import GameStage from '../../components/GameStage';
+import GameHud from '../../components/GameHud';
 
 const GRID = 12;
 const TICK_MS = 160;
@@ -132,7 +134,7 @@ export default function SnakeGame({ onBack }) {
 
   return (
     <motion.div
-      className="minigame-screen"
+      className="minigame-screen game-theme theme-snake"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
@@ -142,28 +144,32 @@ export default function SnakeGame({ onBack }) {
         <span className="minigame-score">Score: {score}</span>
       </div>
 
-      <div
-        className="snake-grid"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        {Array.from({ length: GRID * GRID }).map((_, i) => {
-          const x = i % GRID;
-          const y = Math.floor(i / GRID);
-          const key = `${x},${y}`;
-          const isFood = state.food.x === x && state.food.y === y;
-          const isSnake = cells.has(key);
-          const isHead = headKey === key;
-          return (
-            <div
-              key={key}
-              className={`snake-cell${isSnake ? ' snake-body' : ''}${isHead ? ' snake-head' : ''}`}
-            >
-              {isFood && <PixelHeart size={12} color="var(--pink)" />}
-            </div>
-          );
-        })}
-      </div>
+      <GameHud game="snake" score={score} done={over} />
+
+      <GameStage>
+        <div
+          className="snake-grid"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          {Array.from({ length: GRID * GRID }).map((_, i) => {
+            const x = i % GRID;
+            const y = Math.floor(i / GRID);
+            const key = `${x},${y}`;
+            const isFood = state.food.x === x && state.food.y === y;
+            const isSnake = cells.has(key);
+            const isHead = headKey === key;
+            return (
+              <div
+                key={key}
+                className={`snake-cell${isSnake ? ' snake-body' : ''}${isHead ? ' snake-head' : ''}`}
+              >
+                {isFood && <PixelHeart size={12} color="var(--pink)" />}
+              </div>
+            );
+          })}
+        </div>
+      </GameStage>
 
       <button type="button" className="minigame-exit" onClick={onBack}>
         Back

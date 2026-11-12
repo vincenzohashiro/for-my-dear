@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import PixelHeart from '../../components/PixelHeart';
 import { GameScoreboard } from '../../components/Scoreboard';
 import { useRecordScore } from '../../lib/scoreboard';
+import GameStage from '../../components/GameStage';
+import GameHud from '../../components/GameHud';
 
 const HOLE_COUNT = 9;
 const ROUND_SECONDS = 20;
@@ -67,7 +69,7 @@ export default function WhackAHeartGame({ onBack }) {
 
   return (
     <motion.div
-      className="minigame-screen"
+      className="minigame-screen game-theme theme-whack"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
@@ -79,27 +81,31 @@ export default function WhackAHeartGame({ onBack }) {
         </span>
       </div>
 
-      <div className="whack-grid">
-        {Array.from({ length: HOLE_COUNT }).map((_, index) => (
-          <button
-            key={index}
-            type="button"
-            className="whack-hole"
-            onClick={() => handleWhack(index)}
-          >
-            {activeHole === index && (
-              <motion.span
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-                className="whack-heart"
-              >
-                <PixelHeart size={26} color="var(--pink)" />
-              </motion.span>
-            )}
-          </button>
-        ))}
-      </div>
+      <GameHud game="whack" score={score} done={phase === 'over'} />
+
+      <GameStage>
+        <div className="whack-grid">
+          {Array.from({ length: HOLE_COUNT }).map((_, index) => (
+            <button
+              key={index}
+              type="button"
+              className="whack-hole"
+              onClick={() => handleWhack(index)}
+            >
+              {activeHole === index && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  exit={{ scale: 0 }}
+                  className="whack-heart"
+                >
+                  <PixelHeart size={26} color="var(--pink)" />
+                </motion.span>
+              )}
+            </button>
+          ))}
+        </div>
+      </GameStage>
 
       <button type="button" className="minigame-exit" onClick={onBack}>
         Back

@@ -5,6 +5,7 @@ import { PIECE_GLYPHS, createInitialGame, getLegalMoves, playMove } from '../../
 import { useLive, useLiveEvent } from '../../lib/live';
 import { PLAYERS, recordLocalScore, recordScore } from '../../lib/scoreboard';
 import { LivePresence, OpponentGone } from './LiveBits';
+import GameStage from '../../components/GameStage';
 
 // Colors alternate every game so nobody is always stuck with Black.
 const whiteFor = (round) => PLAYERS[round % 2].id;
@@ -99,7 +100,7 @@ export default function LiveChess({ onExit }) {
 
   return (
     <motion.div
-      className="minigame-screen"
+      className="minigame-screen game-theme theme-chess"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
@@ -116,31 +117,33 @@ export default function LiveChess({ onExit }) {
         <span>&#9818; {names.b}</span>
       </div>
 
-      <div className={`chess-board${myTurn ? '' : ' live-locked'}`}>
-        {order.map((row) =>
-          order.map((col) => {
-            const piece = game.board[row][col];
-            const isDark = (row + col) % 2 === 1;
-            const isSelected = selected && selected.row === row && selected.col === col;
-            const isLast =
-              last && ((last.fromRow === row && last.fromCol === col) || (last.toRow === row && last.toCol === col));
-            const moveHere = legalMoves.find((m) => m.toRow === row && m.toCol === col);
-            return (
-              <button
-                key={`${row}-${col}`}
-                type="button"
-                className={`chess-square${isDark ? ' dark' : ' light'}${isSelected ? ' selected' : ''}${isLast ? ' last-move' : ''}`}
-                onClick={() => handleSquareClick(row, col)}
-              >
-                {piece && (
-                  <span className={`chess-piece chess-piece-${piece.color}`}>{PIECE_GLYPHS[piece.color][piece.type]}</span>
-                )}
-                {moveHere && <span className={moveHere.capture ? 'chess-capture-ring' : 'chess-move-dot'} />}
-              </button>
-            );
-          })
-        )}
-      </div>
+      <GameStage>
+        <div className={`chess-board${myTurn ? '' : ' live-locked'}`}>
+          {order.map((row) =>
+            order.map((col) => {
+              const piece = game.board[row][col];
+              const isDark = (row + col) % 2 === 1;
+              const isSelected = selected && selected.row === row && selected.col === col;
+              const isLast =
+                last && ((last.fromRow === row && last.fromCol === col) || (last.toRow === row && last.toCol === col));
+              const moveHere = legalMoves.find((m) => m.toRow === row && m.toCol === col);
+              return (
+                <button
+                  key={`${row}-${col}`}
+                  type="button"
+                  className={`chess-square${isDark ? ' dark' : ' light'}${isSelected ? ' selected' : ''}${isLast ? ' last-move' : ''}`}
+                  onClick={() => handleSquareClick(row, col)}
+                >
+                  {piece && (
+                    <span className={`chess-piece chess-piece-${piece.color}`}>{PIECE_GLYPHS[piece.color][piece.type]}</span>
+                  )}
+                  {moveHere && <span className={moveHere.capture ? 'chess-capture-ring' : 'chess-move-dot'} />}
+                </button>
+              );
+            })
+          )}
+        </div>
+      </GameStage>
 
       <OpponentGone />
 

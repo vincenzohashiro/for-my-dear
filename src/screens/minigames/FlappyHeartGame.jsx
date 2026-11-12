@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import PixelHeart from '../../components/PixelHeart';
 import { GameScoreboard } from '../../components/Scoreboard';
 import { useRecordScore } from '../../lib/scoreboard';
+import GameStage from '../../components/GameStage';
+import GameHud from '../../components/GameHud';
 
 const AREA_WIDTH = 280;
 const AREA_HEIGHT = 360;
@@ -128,7 +130,7 @@ export default function FlappyHeartGame({ onBack }) {
 
   return (
     <motion.div
-      className="minigame-screen"
+      className="minigame-screen game-theme theme-flappy"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
@@ -138,29 +140,33 @@ export default function FlappyHeartGame({ onBack }) {
         <span className="minigame-score">Score: {score}</span>
       </div>
 
-      <div className="flappy-area" onClick={flap}>
-        <div className="flappy-heart" style={{ top: heartY, left: HEART_X }}>
-          <PixelHeart size={HEART_SIZE} color="var(--pink)" />
-        </div>
-        {pipes.map((pipe) => (
-          <div key={pipe.id}>
-            <div
-              className="flappy-pipe"
-              style={{ left: pipe.x, top: 0, height: pipe.gapY, width: PIPE_WIDTH }}
-            />
-            <div
-              className="flappy-pipe"
-              style={{
-                left: pipe.x,
-                top: pipe.gapY + PIPE_GAP,
-                height: AREA_HEIGHT - pipe.gapY - PIPE_GAP,
-                width: PIPE_WIDTH,
-              }}
-            />
+      <GameHud game="flappy" score={score} done={phase === 'over'} />
+
+      <GameStage>
+        <div className="flappy-area" onClick={flap}>
+          <div className="flappy-heart" style={{ top: heartY, left: HEART_X }}>
+            <PixelHeart size={HEART_SIZE} color="var(--pink)" />
           </div>
-        ))}
-        {phase === 'ready' && <div className="flappy-hint">Tap / Space to flap</div>}
-      </div>
+          {pipes.map((pipe) => (
+            <div key={pipe.id}>
+              <div
+                className="flappy-pipe"
+                style={{ left: pipe.x, top: 0, height: pipe.gapY, width: PIPE_WIDTH }}
+              />
+              <div
+                className="flappy-pipe"
+                style={{
+                  left: pipe.x,
+                  top: pipe.gapY + PIPE_GAP,
+                  height: AREA_HEIGHT - pipe.gapY - PIPE_GAP,
+                  width: PIPE_WIDTH,
+                }}
+              />
+            </div>
+          ))}
+          {phase === 'ready' && <div className="flappy-hint">Tap / Space to flap</div>}
+        </div>
+      </GameStage>
 
       <button type="button" className="minigame-exit" onClick={onBack}>
         Back

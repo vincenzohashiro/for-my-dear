@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import PixelHeart from '../../components/PixelHeart';
 import { GameScoreboard } from '../../components/Scoreboard';
 import { useRecordScore } from '../../lib/scoreboard';
+import GameStage from '../../components/GameStage';
+import GameHud from '../../components/GameHud';
 
 const AREA_WIDTH = 280;
 const AREA_HEIGHT = 360;
@@ -131,7 +133,7 @@ export default function PixelFlapGame({ onBack }) {
 
   return (
     <motion.div
-      className="minigame-screen"
+      className="minigame-screen game-theme theme-flap"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
@@ -141,41 +143,45 @@ export default function PixelFlapGame({ onBack }) {
         <span className="minigame-score">Score: {score}</span>
       </div>
 
-      <div className="flap-area" onClick={flap}>
-        <div className="flap-cloud" style={{ top: 30, left: 30 }} />
-        <div className="flap-cloud" style={{ top: 70, left: 180 }} />
-        <div className="flap-cloud" style={{ top: 20, left: 220 }} />
+      <GameHud game="flap" score={score} done={phase === 'over'} />
 
-        <div
-          className="flap-bird"
-          style={{ top: birdY, left: BIRD_X, transform: `rotate(${Math.min(Math.max(velocityRef.current * 4, -25), 60)}deg)` }}
-        >
-          <PixelHeart size={BIRD_SIZE} color="var(--pink-dark)" />
-        </div>
-
-        {pipes.map((pipe) => (
-          <div key={pipe.id}>
-            <div className="flap-pipe" style={{ left: pipe.x, top: 0, height: pipe.gapY, width: PIPE_WIDTH }}>
-              <div className="flap-pipe-cap" />
-            </div>
-            <div
-              className="flap-pipe"
-              style={{
-                left: pipe.x,
-                top: pipe.gapY + PIPE_GAP,
-                height: AREA_HEIGHT - GROUND_HEIGHT - pipe.gapY - PIPE_GAP,
-                width: PIPE_WIDTH,
-              }}
-            >
-              <div className="flap-pipe-cap bottom" />
-            </div>
+      <GameStage>
+        <div className="flap-area" onClick={flap}>
+          <div className="flap-cloud" style={{ top: 30, left: 30 }} />
+          <div className="flap-cloud" style={{ top: 70, left: 180 }} />
+          <div className="flap-cloud" style={{ top: 20, left: 220 }} />
+  
+          <div
+            className="flap-bird"
+            style={{ top: birdY, left: BIRD_X, transform: `rotate(${Math.min(Math.max(velocityRef.current * 4, -25), 60)}deg)` }}
+          >
+            <PixelHeart size={BIRD_SIZE} color="var(--pink-dark)" />
           </div>
-        ))}
-
-        <div className="flap-ground" style={{ height: GROUND_HEIGHT }} />
-
-        {phase === 'ready' && <div className="flappy-hint">Tap / Space to flap</div>}
-      </div>
+  
+          {pipes.map((pipe) => (
+            <div key={pipe.id}>
+              <div className="flap-pipe" style={{ left: pipe.x, top: 0, height: pipe.gapY, width: PIPE_WIDTH }}>
+                <div className="flap-pipe-cap" />
+              </div>
+              <div
+                className="flap-pipe"
+                style={{
+                  left: pipe.x,
+                  top: pipe.gapY + PIPE_GAP,
+                  height: AREA_HEIGHT - GROUND_HEIGHT - pipe.gapY - PIPE_GAP,
+                  width: PIPE_WIDTH,
+                }}
+              >
+                <div className="flap-pipe-cap bottom" />
+              </div>
+            </div>
+          ))}
+  
+          <div className="flap-ground" style={{ height: GROUND_HEIGHT }} />
+  
+          {phase === 'ready' && <div className="flappy-hint">Tap / Space to flap</div>}
+        </div>
+      </GameStage>
 
       <button type="button" className="minigame-exit" onClick={onBack}>
         Back

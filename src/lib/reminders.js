@@ -34,10 +34,29 @@ function writeLocal(rows) {
 
 // Reminders live in Supabase so both phones see the same profiles. Until the
 // table exists (or when offline) they fall back to this device only.
+// Shared by every caller so two screens loading at once can't upload twice.
+let uploading = null;
+async function uploadLocal() {
+  const local = readLocal();
+  if (!local.length) return;
+  const { error } = await supabase
+    .from(TABLE)
+    .insert(local.map(({ person, kind, category, text, created_at }) => ({ person, kind, category, text, created_at })));
+  if (!error) writeLocal(readLocal().filter((r) => !local.some((l) => l.id === r.id)));
+}
+
 export async function fetchReminders() {
   if (supabase) {
-    const { data, error } = await supabase.from(TABLE).select('*').order('created_at', { ascending: true });
-    if (!error) return { rows: data, shared: true };
+    const query = () => supabase.from(TABLE).select('*').order('created_at', { ascending: true });
+    const first = await query();
+    if (!first.error) {
+      // Reminders saved on this phone before the shared table existed move up once.
+      if (!readLocal().length) return { rows: first.data, shared: true };
+      uploading = uploading || uploadLocal().finally(() => (uploading = null));
+      await uploading;
+      const fresh = await query();
+      return { rows: fresh.error ? first.data : fresh.data, shared: true };
+    }
   }
   return { rows: readLocal(), shared: false };
 }

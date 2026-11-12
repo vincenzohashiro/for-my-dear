@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { GameScoreboard } from '../../components/Scoreboard';
 import { useRecordScore } from '../../lib/scoreboard';
+import GameStage from '../../components/GameStage';
+import GameHud from '../../components/GameHud';
 
 const AREA_WIDTH = 280;
 const AREA_HEIGHT = 320;
@@ -186,7 +188,7 @@ export default function BrickBreakerGame({ onBack }) {
 
   return (
     <motion.div
-      className="minigame-screen"
+      className="minigame-screen game-theme theme-breaker"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
@@ -198,33 +200,37 @@ export default function BrickBreakerGame({ onBack }) {
         </span>
       </div>
 
-      <div
-        className="breaker-area"
-        onMouseMove={(e) => phase === 'playing' && movePaddleTo(e.clientX, e.currentTarget)}
-        onTouchMove={(e) => {
-          if (phase !== 'playing') return;
-          e.preventDefault();
-          movePaddleTo(e.touches[0].clientX, e.currentTarget);
-        }}
-        onClick={launch}
-      >
-        {bricks.map((brick) => (
+      <GameHud game="breaker" score={score} done={phase === 'over' || phase === 'won'} />
+
+      <GameStage>
+        <div
+          className="breaker-area"
+          onMouseMove={(e) => phase === 'playing' && movePaddleTo(e.clientX, e.currentTarget)}
+          onTouchMove={(e) => {
+            if (phase !== 'playing') return;
+            e.preventDefault();
+            movePaddleTo(e.touches[0].clientX, e.currentTarget);
+          }}
+          onClick={launch}
+        >
+          {bricks.map((brick) => (
+            <div
+              key={brick.id}
+              className="breaker-brick"
+              style={{ left: brick.x, top: brick.y, width: BRICK_WIDTH, height: BRICK_HEIGHT, background: brick.color }}
+            />
+          ))}
           <div
-            key={brick.id}
-            className="breaker-brick"
-            style={{ left: brick.x, top: brick.y, width: BRICK_WIDTH, height: BRICK_HEIGHT, background: brick.color }}
+            className="breaker-paddle"
+            style={{ left: paddleX - PADDLE_WIDTH / 2, top: PADDLE_Y, width: PADDLE_WIDTH, height: PADDLE_HEIGHT }}
           />
-        ))}
-        <div
-          className="breaker-paddle"
-          style={{ left: paddleX - PADDLE_WIDTH / 2, top: PADDLE_Y, width: PADDLE_WIDTH, height: PADDLE_HEIGHT }}
-        />
-        <div
-          className="breaker-ball"
-          style={{ left: ball.x - BALL_RADIUS, top: ball.y - BALL_RADIUS, width: BALL_RADIUS * 2, height: BALL_RADIUS * 2 }}
-        />
-        {phase === 'playing' && !launched && <div className="flappy-hint">Tap to launch</div>}
-      </div>
+          <div
+            className="breaker-ball"
+            style={{ left: ball.x - BALL_RADIUS, top: ball.y - BALL_RADIUS, width: BALL_RADIUS * 2, height: BALL_RADIUS * 2 }}
+          />
+          {phase === 'playing' && !launched && <div className="flappy-hint">Tap to launch</div>}
+        </div>
+      </GameStage>
 
       <button type="button" className="minigame-exit" onClick={onBack}>
         Back

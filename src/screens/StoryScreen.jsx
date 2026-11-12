@@ -96,14 +96,21 @@ export default function StoryScreen({ onBack, onNavigate }) {
             </header>
 
             <div className="story-tabs">
-              {CHAPTERS.map((chapter) => (
+              {CHAPTERS.map((chapter, index) => (
                 <button
                   key={chapter.id}
                   type="button"
                   className={`story-tab${activeChapter === chapter.id ? ' active' : ''}${chapter.comingSoon ? ' coming-soon' : ''}`}
                   onClick={() => scrollToChapter(chapter.id)}
+                  title={chapter.comingSoon ? `${chapter.label}: coming soon` : `${chapter.label}: ${chapter.title}`}
+                  aria-label={chapter.comingSoon ? `${chapter.label}, coming soon` : `${chapter.label}, ${chapter.title}`}
                 >
-                  {chapter.comingSoon ? `${chapter.label} 🔒` : chapter.label}
+                  <span className="story-tab-ch" aria-hidden="true">
+                    ch
+                  </span>
+                  <span className="story-tab-num" aria-hidden="true">
+                    {chapter.comingSoon ? '🔒' : index + 1}
+                  </span>
                   {isNewKey(`chapter:${chapter.id}`) && <span className="story-tab-dot" aria-label="new" />}
                 </button>
               ))}

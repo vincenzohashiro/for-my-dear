@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { GameScoreboard } from '../../components/Scoreboard';
 import { useRecordScore } from '../../lib/scoreboard';
+import GameStage from '../../components/GameStage';
+import GameHud from '../../components/GameHud';
 
 const SIZE = 4;
 
@@ -169,7 +171,7 @@ export default function MergeHeartsGame({ onBack }) {
 
   return (
     <motion.div
-      className="minigame-screen"
+      className="minigame-screen game-theme theme-merge"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
@@ -179,24 +181,28 @@ export default function MergeHeartsGame({ onBack }) {
         <span className="minigame-score">Score: {score}</span>
       </div>
 
-      <div
-        className="merge-grid"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        {grid.flat().map((value, i) => {
-          const style = value ? getTileStyle(value) : null;
-          return (
-            <div
-              key={i}
-              className="merge-cell"
-              style={style ? { background: style.bg, color: style.text } : undefined}
-            >
-              {value || ''}
-            </div>
-          );
-        })}
-      </div>
+      <GameHud game="merge" score={score} done={over} />
+
+      <GameStage>
+        <div
+          className="merge-grid"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          {grid.flat().map((value, i) => {
+            const style = value ? getTileStyle(value) : null;
+            return (
+              <div
+                key={i}
+                className="merge-cell"
+                style={style ? { background: style.bg, color: style.text } : undefined}
+              >
+                {value || ''}
+              </div>
+            );
+          })}
+        </div>
+      </GameStage>
 
       <div className="merge-controls">
         <button type="button" className="merge-arrow" onClick={() => handleMove('up')}>

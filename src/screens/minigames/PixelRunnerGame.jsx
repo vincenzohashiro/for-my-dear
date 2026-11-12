@@ -5,6 +5,8 @@ import PixelHeart from '../../components/PixelHeart';
 import { CACTUS_GRID } from '../../pixelGrids';
 import { GameScoreboard } from '../../components/Scoreboard';
 import { useRecordScore } from '../../lib/scoreboard';
+import GameStage from '../../components/GameStage';
+import GameHud from '../../components/GameHud';
 
 const AREA_WIDTH = 300;
 const AREA_HEIGHT = 170;
@@ -143,7 +145,7 @@ export default function PixelRunnerGame({ onBack }) {
 
   return (
     <motion.div
-      className="minigame-screen"
+      className="minigame-screen game-theme theme-runner"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
@@ -153,25 +155,29 @@ export default function PixelRunnerGame({ onBack }) {
         <span className="minigame-score">Score: {score}</span>
       </div>
 
-      <div className="runner-area" onClick={jump}>
-        <div className="runner-ground" style={{ top: GROUND_Y }} />
-        <div
-          className="runner-character"
-          style={{ left: RUNNER_X, top: GROUND_Y - RUNNER_SIZE + runnerY }}
-        >
-          <PixelHeart size={RUNNER_SIZE} color="var(--pink-dark)" />
-        </div>
-        {obstacles.map((o) => (
+      <GameHud game="runner" score={score} done={phase === 'over'} />
+
+      <GameStage>
+        <div className="runner-area" onClick={jump}>
+          <div className="runner-ground" style={{ top: GROUND_Y }} />
           <div
-            key={o.id}
-            className="runner-obstacle"
-            style={{ left: o.x, top: GROUND_Y - OBSTACLE_HEIGHT }}
+            className="runner-character"
+            style={{ left: RUNNER_X, top: GROUND_Y - RUNNER_SIZE + runnerY }}
           >
-            <PixelSprite grid={CACTUS_GRID} size={OBSTACLE_WIDTH} color="var(--green)" />
+            <PixelHeart size={RUNNER_SIZE} color="var(--pink-dark)" />
           </div>
-        ))}
-        {phase === 'ready' && <div className="flappy-hint">Tap / Space to jump</div>}
-      </div>
+          {obstacles.map((o) => (
+            <div
+              key={o.id}
+              className="runner-obstacle"
+              style={{ left: o.x, top: GROUND_Y - OBSTACLE_HEIGHT }}
+            >
+              <PixelSprite grid={CACTUS_GRID} size={OBSTACLE_WIDTH} color="var(--green)" />
+            </div>
+          ))}
+          {phase === 'ready' && <div className="flappy-hint">Tap / Space to jump</div>}
+        </div>
+      </GameStage>
 
       <button type="button" className="minigame-exit" onClick={onBack}>
         Back

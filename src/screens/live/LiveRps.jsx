@@ -4,6 +4,7 @@ import { GameScoreboard } from '../../components/Scoreboard';
 import { useLive, useLiveEvent } from '../../lib/live';
 import { recordLocalScore, recordScore } from '../../lib/scoreboard';
 import { LivePresence, OpponentGone } from './LiveBits';
+import RpsCountdown from '../minigames/RpsCountdown';
 
 const TARGET = 5;
 const CHOICES = [
@@ -21,11 +22,13 @@ function judge(a, b) {
 
 // Everything (rounds played, score, winner) is derived from both players' picks,
 // so the two phones can't drift apart.
-function tally(myPicks, theirPicks) {
+// `limit` caps how many rounds count, so a just-finished round stays hidden
+// until the countdown has played.
+function tally(myPicks, theirPicks, limit = Infinity) {
   const score = { me: 0, them: 0 };
   let round = 1;
   let last = null;
-  while (myPicks[round] && theirPicks[round] && score.me < TARGET && score.them < TARGET) {
+  while (round <= limit && myPicks[round] && theirPicks[round] && score.me < TARGET && score.them < TARGET) {
     const result = judge(myPicks[round], theirPicks[round]);
     if (result === 'win') score.me += 1;
     if (result === 'lose') score.them += 1;
@@ -39,7 +42,14 @@ export default function LiveRps({ onExit }) {
   const live = useLive();
   const [match, setMatch] = useState({ id: 0, mine: {}, theirs: {} });
   const [scoreSaved, setScoreSaved] = useState(0);
-  const { score, round, last, winner } = tally(match.mine, match.theirs);
+  // Rounds both players have picked for, and how many have been revealed here.
+  const { round } = tally(match.mine, match.theirs);
+  const completed = round - 1;
+  const [revealed, setRevealed] = useState({ id: 0, n: 0 });
+  // After a reconnect, only the newest round gets a countdown; older ones show at once.
+  const shown = Math.max(revealed.id === match.id ? revealed.n : 0, completed - 1);
+  const counting = completed > shown;
+  const { score, last, winner } = tally(match.mine, match.theirs, shown);
   const myPick = match.mine[round];
   const theyPicked = Boolean(match.theirs[round]);
 
@@ -76,7 +86,7 @@ export default function LiveRps({ onExit }) {
   }, [winner, match.id, live.player, live.opponent]);
 
   const pick = (choice) => {
-    if (myPick || winner) return;
+    if (myPick || winner || counting) return;
     setMatch((m) => ({ ...m, mine: { ...m.mine, [round]: choice } }));
     send('rps-pick', { id: match.id, round, choice });
   };
@@ -117,9 +127,13 @@ export default function LiveRps({ onExit }) {
 
       <div className="rps-arena">
         <AnimatePresence mode="wait">
-          {last ? (
+          {counting ? (
+            <motion.div key={`count-${completed}`} exit={{ opacity: 0 }}>
+              <RpsCountdown onDone={() => setRevealed({ id: match.id, n: completed })} />
+            </motion.div>
+          ) : last ? (
             <motion.div
-              key={round}
+              key={`round-${shown}`}
               className="rps-round"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -139,7 +153,7 @@ export default function LiveRps({ onExit }) {
       </div>
 
       <p className="live-turn-note">
-        {winner
+        {winner || counting
           ? ' '
           : myPick
             ? `Locked in ${emojiFor(myPick)}. Waiting for ${live.opponent}...`
@@ -154,7 +168,7 @@ export default function LiveRps({ onExit }) {
             key={choice.id}
             type="button"
             className={`rps-choice${myPick === choice.id ? ' picked' : ''}`}
-            disabled={Boolean(myPick || winner)}
+            disabled={Boolean(myPick || winner || counting)}
             onClick={() => pick(choice.id)}
           >
             <span className="rps-emoji">{choice.emoji}</span>

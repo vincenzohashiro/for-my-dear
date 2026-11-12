@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GameScoreboard } from '../../components/Scoreboard';
 import { recordScore, usePlayer } from '../../lib/scoreboard';
+import GameHud from '../../components/GameHud';
+import RpsCountdown from './RpsCountdown';
 
 const CHOICES = [
   { id: 'rock', label: 'Rock', emoji: '✊' },
@@ -41,7 +43,17 @@ export default function RockPaperScissorsGame({ onBack }) {
     []
   );
 
+  // Picking starts the "Rock... Paper... Scissors... SHOOT!" countdown; the
+  // CPU's hand and the result are revealed when it finishes.
+  const [picking, setPicking] = useState(null);
+
   const play = (choiceId) => {
+    if (picking) return;
+    setPicking(choiceId);
+  };
+
+  const reveal = (choiceId) => {
+    setPicking(null);
     const cpuChoice = CHOICES[Math.floor(Math.random() * CHOICES.length)].id;
     const result = judge(choiceId, cpuChoice);
     setTally((t) => ({ ...t, [result]: t[result] + 1 }));
@@ -68,7 +80,7 @@ export default function RockPaperScissorsGame({ onBack }) {
 
   return (
     <motion.div
-      className="minigame-screen"
+      className="minigame-screen game-theme theme-rps"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
@@ -80,9 +92,15 @@ export default function RockPaperScissorsGame({ onBack }) {
         </span>
       </div>
 
+      <GameHud game="rps" score={streak} done={false} unit="in a row" />
+
       <div className="rps-arena">
         <AnimatePresence mode="wait">
-          {round ? (
+          {picking ? (
+            <motion.div key="countdown" exit={{ opacity: 0 }}>
+              <RpsCountdown onDone={() => reveal(picking)} />
+            </motion.div>
+          ) : round ? (
             <motion.div
               key={`${round.player}-${round.cpu}-${tally.win + tally.lose + tally.tie}`}
               className="rps-round"
@@ -108,8 +126,9 @@ export default function RockPaperScissorsGame({ onBack }) {
           <button
             key={choice.id}
             type="button"
-            className="rps-choice"
+            className={`rps-choice${picking === choice.id ? ' picked' : ''}`}
             onClick={() => play(choice.id)}
+            disabled={Boolean(picking)}
           >
             <span className="rps-emoji">{choice.emoji}</span>
             <span>{choice.label}</span>

@@ -8,6 +8,7 @@ import {
   getLegalMoves,
   playMove,
 } from '../../lib/chessEngine';
+import GameStage from '../../components/GameStage';
 
 export default function ChessGame({ onBack }) {
   const [game, setGame] = useState(createInitialGame);
@@ -70,7 +71,7 @@ export default function ChessGame({ onBack }) {
 
   return (
     <motion.div
-      className="minigame-screen"
+      className="minigame-screen game-theme theme-chess"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
@@ -90,26 +91,28 @@ export default function ChessGame({ onBack }) {
         )}
       </div>
 
-      <div className="chess-board">
-        {game.board.map((rowArr, row) =>
-          rowArr.map((piece, col) => {
-            const isDark = (row + col) % 2 === 1;
-            const isSelected = selected && selected.row === row && selected.col === col;
-            const moveHere = legalMoves.find((m) => m.toRow === row && m.toCol === col);
-            return (
-              <button
-                key={`${row}-${col}`}
-                type="button"
-                className={`chess-square${isDark ? ' dark' : ' light'}${isSelected ? ' selected' : ''}`}
-                onClick={() => handleSquareClick(row, col)}
-              >
-                {piece && <span className={`chess-piece chess-piece-${piece.color}`}>{PIECE_GLYPHS[piece.color][piece.type]}</span>}
-                {moveHere && <span className={moveHere.capture ? 'chess-capture-ring' : 'chess-move-dot'} />}
-              </button>
-            );
-          })
-        )}
-      </div>
+      <GameStage>
+        <div className="chess-board">
+          {game.board.map((rowArr, row) =>
+            rowArr.map((piece, col) => {
+              const isDark = (row + col) % 2 === 1;
+              const isSelected = selected && selected.row === row && selected.col === col;
+              const moveHere = legalMoves.find((m) => m.toRow === row && m.toCol === col);
+              return (
+                <button
+                  key={`${row}-${col}`}
+                  type="button"
+                  className={`chess-square${isDark ? ' dark' : ' light'}${isSelected ? ' selected' : ''}`}
+                  onClick={() => handleSquareClick(row, col)}
+                >
+                  {piece && <span className={`chess-piece chess-piece-${piece.color}`}>{PIECE_GLYPHS[piece.color][piece.type]}</span>}
+                  {moveHere && <span className={moveHere.capture ? 'chess-capture-ring' : 'chess-move-dot'} />}
+                </button>
+              );
+            })
+          )}
+        </div>
+      </GameStage>
 
       <div className="chess-footer">
         <button type="button" className="minigame-exit" onClick={onBack}>

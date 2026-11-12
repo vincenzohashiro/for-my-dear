@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import PixelHeart from '../../components/PixelHeart';
 import { GameScoreboard } from '../../components/Scoreboard';
 import { useRecordScore } from '../../lib/scoreboard';
+import GameStage from '../../components/GameStage';
+import GameHud from '../../components/GameHud';
 
 const AREA_WIDTH = 280;
 const AREA_HEIGHT = 340;
@@ -106,7 +108,7 @@ export default function CatchHeartsGame({ onBack }) {
 
   return (
     <motion.div
-      className="minigame-screen"
+      className="minigame-screen game-theme theme-catch"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
@@ -118,22 +120,26 @@ export default function CatchHeartsGame({ onBack }) {
         </span>
       </div>
 
-      <div
-        className="catch-area"
-        onMouseMove={(e) => phase === 'playing' && moveBasketTo(e.clientX, e.currentTarget)}
-        onTouchMove={(e) => {
-          if (phase !== 'playing') return;
-          e.preventDefault();
-          moveBasketTo(e.touches[0].clientX, e.currentTarget);
-        }}
-      >
-        {hearts.map((heart) => (
-          <span key={heart.id} className="catch-heart" style={{ left: heart.x, top: heart.y }}>
-            <PixelHeart size={HEART_SIZE} color="var(--pink)" />
-          </span>
-        ))}
-        <div className="catch-basket" style={{ left: basketX - BASKET_WIDTH / 2, top: BASKET_Y }} />
-      </div>
+      <GameHud game="catch" score={score} done={phase === 'over'} />
+
+      <GameStage>
+        <div
+          className="catch-area"
+          onMouseMove={(e) => phase === 'playing' && moveBasketTo(e.clientX, e.currentTarget)}
+          onTouchMove={(e) => {
+            if (phase !== 'playing') return;
+            e.preventDefault();
+            moveBasketTo(e.touches[0].clientX, e.currentTarget);
+          }}
+        >
+          {hearts.map((heart) => (
+            <span key={heart.id} className="catch-heart" style={{ left: heart.x, top: heart.y }}>
+              <PixelHeart size={HEART_SIZE} color="var(--pink)" />
+            </span>
+          ))}
+          <div className="catch-basket" style={{ left: basketX - BASKET_WIDTH / 2, top: BASKET_Y }} />
+        </div>
+      </GameStage>
 
       <button type="button" className="minigame-exit" onClick={onBack}>
         Back
