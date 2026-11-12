@@ -59,6 +59,9 @@ export default function PlayScreen({ onBack }) {
   // Opened straight from the notification bell (after the who's-playing question).
   const [activeGame, setActiveGame] = useState(() => pendingId('game'));
 
+  // Asked every time the tab opens so each score lands on the right name.
+  const [player, setPlayer] = useState(null);
+
   useEffect(() => {
     clearPending();
   }, [clearPending]);
@@ -66,8 +69,6 @@ export default function PlayScreen({ onBack }) {
   useEffect(() => {
     if (activeGame && player) markSeen([`game:${activeGame}`]);
   }, [activeGame, player, markSeen]);
-  // Asked every time the tab opens so each score lands on the right name.
-  const [player, setPlayer] = useState(null);
 
   const ActiveGameComponent = activeGame ? GAME_COMPONENTS[activeGame] : null;
 

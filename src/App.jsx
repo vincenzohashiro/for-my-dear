@@ -18,6 +18,25 @@ import './App.css';
 // Flip to true and push again when the site is ready to go live.
 const SITE_READY = true;
 
+// Once both gates are passed on a device, skip them on later visits.
+const UNLOCK_KEY = 'ftd-unlocked';
+
+function isUnlocked() {
+  try {
+    return localStorage.getItem(UNLOCK_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function rememberUnlock() {
+  try {
+    localStorage.setItem(UNLOCK_KEY, 'true');
+  } catch {
+    /* ignore storage failures: the gates just show again next time */
+  }
+}
+
 const WIPE_STEPS = {
   initial: {
     clipPath: [
@@ -51,7 +70,7 @@ const FULLSCREEN_STEPS = {
 };
 
 function App() {
-  const [step, setStep] = useState('name');
+  const [step, setStep] = useState(() => (isUnlocked() ? 'menu' : 'name'));
   const [hash, setHash] = useState(() => (typeof window !== 'undefined' ? window.location.hash : ''));
 
   useEffect(() => {
@@ -133,7 +152,12 @@ function App() {
               transition={{ duration: 0.4, ease: 'linear' }}
               className="screen-wipe"
             >
-              <QuestionGate onSuccess={() => setStep('menu')} />
+              <QuestionGate
+                onSuccess={() => {
+                  rememberUnlock();
+                  setStep('menu');
+                }}
+              />
             </motion.div>
           )}
         </AnimatePresence>
